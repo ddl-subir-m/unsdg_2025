@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block title %}Leaderboard{% endblock %}
+
+{% block content %}
+<h1>Team Leaderboard</h1>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Rank</th>
+            <th>Team Name</th>
+            <th>Events Count</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for rank, team, event_count in ranked_teams %}
+            <tr>
+                <td>{{ rank }}</td>
+                <td>{{ team.name }}</td>
+                <td>{{ event_count }}</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

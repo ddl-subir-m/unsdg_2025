@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block title %}Create Event{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <h1 class="text-center">Create a New Event</h1>
+        <form method="POST" action="{{ url_for('main.create_event') }}">
+            <div class="mb-3">
+                <label for="title" class="form-label">Event Title</label>
+                <input type="text" class="form-control" id="title" name="title" required>
+            </div>
+            <div class="mb-3">
+                <label for="description" class="form-label">Description</label>
+                <textarea class="form-control" id="description" name="description" rows="3" required></textarea>
+            </div>
+            <div class="mb-3">
+                <label for="date" class="form-label">Event Date</label>
+                <input type="date" class="form-control" id="date" name="date" required>
+            </div>
+            <div class="mb-3">
+                <label for="sdg_goal" class="form-label">SDG Goal</label>
+                <select class="form-select" id="sdg_goal" name="sdg_goal" required>
+                    <option value="" selected disabled>Choose an SDG Goal</option>
+                    {% for i in range(1, 18) %}
+                        <option value="{{ i }}">Goal {{ i }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="text-center">
+                <button type="submit" class="btn btn-primary">Create Event</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

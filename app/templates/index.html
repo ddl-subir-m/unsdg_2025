@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+<div class="text-center">
+    <h1 class="world-helper-title">World Helper</h1>
+    <p class="lead">Organize events that support the UN Sustainable Development Goals!</p>
+    <div class="embed-responsive embed-responsive-16by9">
+        <iframe class="embed-responsive-item" src="https://www.youtube.com/embed/0XTBYMfZyrM" allowfullscreen></iframe>
+    </div>
+    <a href="{{ url_for('main.create_event') }}" class="btn btn-primary mt-3">Create an Event</a>
+</div>
+{% endblock %}

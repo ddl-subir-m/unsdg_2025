@@ -1,0 +1,50 @@
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f0f0f0;
+}
+
+.navbar {
+    background-color: #0a97b0 !important;
+}
+
+.navbar-brand, .nav-link {
+    color: #333333 !important;
+}
+
+.container {
+    background-color: #ffffff;
+    border-radius: 5px;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+    color: #0a97b0;
+    margin-bottom: 20px;
+}
+
+.btn-primary {
+    background-color: #0a97b0;
+    border-color: #0a97b0;
+}
+
+.btn-primary:hover {
+    background-color: #077a8f;
+    border-color: #077a8f;
+}
+
+.form-control:focus {
+    border-color: #0a97b0;
+    box-shadow: 0 0 0 0.2rem rgba(10, 151, 176, 0.25);
+}
+
+.embed-responsive {
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.world-helper-title {
+    color: #0a97b0;
+    font-weight: bold;
+    /* Add any other styles you want for the new title */
+}
