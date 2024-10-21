@@ -1,41 +1,46 @@
 body {
     font-family: 'Arial', sans-serif;
-    background-color: #f0f0f0;
+    background-color: #fff0f5; /* Light pink background */
 }
 
 .navbar {
-    background-color: #0a97b0 !important;
+    background-color: #ff69b4 !important; /* Hot pink navbar */
 }
 
 .navbar-brand, .nav-link {
-    color: #333333 !important;
+    color: #4a0e1c !important; /* Dark pink, almost brown, for better contrast */
+    font-weight: bold; /* Make the text bold for better visibility */
+}
+
+.navbar-brand:hover, .nav-link:hover {
+    color: #ffffff !important; /* White text on hover for interactive feedback */
 }
 
 .container {
     background-color: #ffffff;
     border-radius: 5px;
     padding: 20px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 0 10px rgba(255, 105, 180, 0.1); /* Pink shadow */
 }
 
 h1 {
-    color: #0a97b0;
+    color: #ff1493; /* Deep pink for headings */
     margin-bottom: 20px;
 }
 
 .btn-primary {
-    background-color: #0a97b0;
-    border-color: #0a97b0;
+    background-color: #ff69b4; /* Hot pink buttons */
+    border-color: #ff69b4;
 }
 
 .btn-primary:hover {
-    background-color: #077a8f;
-    border-color: #077a8f;
+    background-color: #ff1493; /* Deep pink on hover */
+    border-color: #ff1493;
 }
 
 .form-control:focus {
-    border-color: #0a97b0;
-    box-shadow: 0 0 0 0.2rem rgba(10, 151, 176, 0.25);
+    border-color: #ff69b4;
+    box-shadow: 0 0 0 0.2rem rgba(255, 105, 180, 0.25);
 }
 
 .embed-responsive {
@@ -44,7 +49,11 @@ h1 {
 }
 
 .world-helper-title {
-    color: #0a97b0;
+    color: #ff1493; /* Deep pink for the title */
     font-weight: bold;
-    /* Add any other styles you want for the new title */
+}
+
+/* Add this to ensure the hamburger menu icon is visible on mobile */
+.navbar-toggler-icon {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba(74, 14, 28, 1)' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e") !important;
 }
