@@ -10,10 +10,18 @@ body {
 .navbar-brand, .nav-link {
     color: #4a0e1c !important; /* Dark pink, almost brown, for better contrast */
     font-weight: bold; /* Make the text bold for better visibility */
+    transition: color 0.3s ease; /* Smooth transition for color change */
 }
 
 .navbar-brand:hover, .nav-link:hover {
-    color: #ffffff !important; /* White text on hover for interactive feedback */
+    color: #ffffff !important; /* White text on hover */
+    text-shadow: 1px 1px 2px #4a0e1c; /* Text shadow for better readability */
+}
+
+/* Add a background color change on hover for even better visibility */
+.nav-item:hover {
+    background-color: rgba(255, 20, 147, 0.7); /* Semi-transparent deep pink */
+    border-radius: 5px; /* Rounded corners for the hover effect */
 }
 
 .container {
