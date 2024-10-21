@@ -11,4 +11,4 @@ if __name__ == '__main__':
             default_team = Team(name="Default Team")
             db.session.add(default_team)
             db.session.commit()
-    app.run(debug=True)
+    app.run(debug=True, host='0.0.0.0', port=5001)
