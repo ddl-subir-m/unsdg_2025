@@ -11,13 +11,23 @@ class User(db.Model):
 class Team(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64), unique=True, nullable=False)
-    members = db.relationship('User', backref='team', lazy='dynamic')
+    team_phrase = db.Column(db.String(100), unique=True, nullable=False)
+    members = db.relationship('TeamMember', backref='team', lazy='dynamic')
     events = db.relationship('Event', backref='team', lazy='dynamic')
 
 class Event(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(128), nullable=False)
-    description = db.Column(db.Text)
-    date = db.Column(db.DateTime, nullable=False)
+    title = db.Column(db.String(100), nullable=False)
+    description = db.Column(db.Text(1000))
+    start_date = db.Column(db.DateTime, nullable=False)
+    end_date = db.Column(db.DateTime, nullable=False)
+    timezone = db.Column(db.String(50), nullable=False)
+    location = db.Column(db.String(100))
     team_id = db.Column(db.Integer, db.ForeignKey('team.id'), nullable=False)
-    sdg_goal = db.Column(db.Integer, nullable=False)
+    sdg_goals = db.Column(db.Integer, nullable=False)
+
+class TeamMember(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(64), nullable=False)
+    team_id = db.Column(db.Integer, db.ForeignKey('team.id'), nullable=False)
+    is_captain = db.Column(db.Boolean, default=False)

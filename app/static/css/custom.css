@@ -65,3 +65,168 @@ h1 {
 .navbar-toggler-icon {
     background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba(74, 14, 28, 1)' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e") !important;
 }
+
+/* Team Selection Styling */
+.nav-tabs .nav-link {
+    color: #666;
+    border: 1px solid #dee2e6;
+    margin-right: 5px;
+}
+
+.nav-tabs .nav-link.active {
+    color: #ff1493;
+    font-weight: bold;
+}
+
+.team-card {
+    transition: all 0.3s ease;
+}
+
+.team-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+#recent_teams_list .list-group-item,
+#team_search_results .list-group-item {
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+#recent_teams_list .list-group-item:hover,
+#team_search_results .list-group-item:hover {
+    background-color: #f8f9fa;
+}
+
+.member-input {
+    position: relative;
+}
+
+.remove-member {
+    position: absolute;
+    right: -40px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: #dc3545;
+}
+
+#phrase_preview {
+    font-size: 1.1em;
+    font-weight: bold;
+    text-align: center;
+    margin-top: 10px;
+    word-break: break-word;
+}
+
+.team-phrase-generator .form-select {
+    margin-bottom: 10px;
+}
+
+/* Animation for adding new member inputs */
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.member-input {
+    animation: slideDown 0.3s ease-out;
+}
+
+/* Add these styles for SDG badges */
+.sdg-badge {
+    display: inline-block;
+    padding: 0.5em 1em;
+    margin: 0.3em;
+    border-radius: 20px;
+    font-size: 0.9em;
+    font-weight: 500;
+    color: white;
+    background-color: #ff1493;
+    transition: transform 0.2s;
+    white-space: nowrap;
+}
+
+.sdg-badge:hover {
+    transform: scale(1.05);
+    cursor: default;
+}
+
+.sdg-description {
+    margin-top: 1em;
+    padding: 1em;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    font-size: 0.9em;
+}
+
+#sdg_detection_status {
+    color: #6c757d;
+}
+
+#detected_sdgs {
+    transition: opacity 0.3s ease-in-out;
+}
+
+#sdg_badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5em;
+    align-items: center;
+}
+
+/* Add these styles for the copy button */
+#copy_phrase_btn {
+    transition: all 0.3s ease;
+}
+
+#copy_phrase_btn:hover {
+    transform: scale(1.05);
+}
+
+.alert-custom {
+    background-color: #ffe6f0;
+    border-color: #ffcce6;
+    color: #ff1493;
+}
+
+.alert-custom i {
+    margin-right: 8px;
+}
+
+/* Pink theme for phrase generator */
+.alert-phrase {
+    background-color: #ffe6f0;
+    border-color: #ffcce6;
+    color: #ff1493;
+}
+
+.alert-phrase.alert-success {
+    background-color: #ffe6f0;
+    border-color: #ffcce6;
+    color: #ff1493;
+}
+
+.btn-outline-pink {
+    color: #ff1493;
+    border-color: #ff1493;
+}
+
+.btn-outline-pink:hover {
+    color: white;
+    background-color: #ff1493;
+    border-color: #ff1493;
+}
+
+/* When copy is successful */
+.btn-outline-pink.btn-success {
+    color: white;
+    background-color: #ff1493;
+    border-color: #ff1493;
+}

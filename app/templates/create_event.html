@@ -6,32 +6,221 @@
 <div class="row justify-content-center">
     <div class="col-md-8">
         <h1 class="text-center">Create a New Event</h1>
-        <form method="POST" action="{{ url_for('main.create_event') }}">
-            <div class="mb-3">
-                <label for="title" class="form-label">Event Title</label>
-                <input type="text" class="form-control" id="title" name="title" required>
+        
+        <!-- Pink notice with alert symbol -->
+        <div class="alert alert-custom mb-4">
+            <i class="fas fa-exclamation-circle"></i> All fields are required to create an event.
+        </div>
+
+        <!-- Team Selection Section -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h4>Team Information</h4>
             </div>
-            <div class="mb-3">
-                <label for="description" class="form-label">Description</label>
-                <textarea class="form-control" id="description" name="description" rows="3" required></textarea>
+            <div class="card-body">
+                <!-- Team Selection Tabs -->
+                <ul class="nav nav-tabs mb-3" id="teamTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="existing-team-tab" data-bs-toggle="tab" 
+                                data-bs-target="#existing-team" type="button" role="tab">
+                            Select Team
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="new-team-tab" data-bs-toggle="tab" 
+                                data-bs-target="#new-team" type="button" role="tab">
+                            Create New Team
+                        </button>
+                    </li>
+                </ul>
+
+                <!-- Tab Content -->
+                <div class="tab-content" id="teamTabsContent">
+                    <!-- Existing Team Tab -->
+                    <div class="tab-pane fade show active" id="existing-team" role="tabpanel">
+                        <div class="mb-3">
+                            <label for="team_search" class="form-label">Search for your team</label>
+                            <input type="text" class="form-control" id="team_search" 
+                                   placeholder="Enter team name or member name">
+                            <div id="recent_teams" class="mt-2">
+                                <h6>Recently Used Teams</h6>
+                                <div id="recent_teams_list" class="list-group">
+                                    <!-- Populated by JavaScript -->
+                                </div>
+                            </div>
+                            <div id="team_search_results" class="mt-2 list-group">
+                                <!-- Search results populated by JavaScript -->
+                            </div>
+                        </div>
+
+                        <div id="existing_team_verify" style="display: none;">
+                            <div class="card bg-light">
+                                <div class="card-body">
+                                    <h5 class="card-title" id="selected_team_name"></h5>
+                                    <div class="mb-3">
+                                        <label for="team_phrase_verify" class="form-label">
+                                            Enter your team's secret phrase to continue
+                                        </label>
+                                        <input type="text" class="form-control" id="team_phrase_verify" 
+                                               placeholder="Enter team phrase">
+                                    </div>
+                                    <button class="btn btn-primary" id="verify_team_btn">Verify Team</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Create New Team Tab -->
+                    <div class="tab-pane fade" id="new-team" role="tabpanel">
+                        <div class="mb-3">
+                            <label for="team_name" class="form-label">Team Name</label>
+                            <input type="text" class="form-control" id="team_name" 
+                                   placeholder="Enter your team name">
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label">Team Phrase</label>
+                            <div class="card bg-light">
+                                <div class="card-body">
+                                    <button class="btn btn-secondary" id="generate_phrase_btn">
+                                        <i class="fas fa-random"></i> Generate Team Secret Phrase
+                                    </button>
+                                    <div class="mt-2">
+                                        <div class="alert alert-phrase d-flex align-items-center justify-content-between" id="phrase_preview">
+                                            <span id="phrase_text">Click the button to generate your team phrase</span>
+                                            <button class="btn btn-sm btn-outline-pink ms-2" id="copy_phrase_btn" style="display: none;">
+                                                <i class="fas fa-copy"></i> Copy
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Team Members</label>
+                            <div id="team_members_container">
+                                <div class="member-input mb-2">
+                                    <div class="input-group">
+                                        <span class="input-group-text">Captain</span>
+                                        <input type="text" class="form-control" name="team_members[]" 
+                                               placeholder="Enter member name">
+                                    </div>
+                                </div>
+                                <!-- Additional member inputs will be added here -->
+                            </div>
+                            <button type="button" class="btn btn-secondary btn-sm mt-2" id="add_member_btn">
+                                <i class="fas fa-plus"></i> Add Member
+                            </button>
+                            <small class="form-text text-muted">
+                                You can add up to 5 team members including the captain
+                            </small>
+                        </div>
+
+                        <button class="btn btn-primary" id="create_team_btn">Create Team</button>
+                    </div>
+                </div>
             </div>
-            <div class="mb-3">
-                <label for="date" class="form-label">Event Date</label>
-                <input type="date" class="form-control" id="date" name="date" required>
+        </div>
+
+        <!-- Event Details Section -->
+        <form method="POST" action="{{ url_for('main.create_event') }}" id="event_form">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h4>Event Details</h4>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label for="title" class="form-label">Event Title</label>
+                        <input type="text" class="form-control" id="title" name="title" maxlength="100" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Event Date and Time</label>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <label for="date" class="form-label">Date</label>
+                                <input type="date" 
+                                       class="form-control" 
+                                       id="date" 
+                                       name="date" 
+                                       required
+                                       min="{{ today_date }}"
+                                       value="{{ today_date }}">
+                            </div>
+                            <div class="col-md-4">
+                                <label for="start_time" class="form-label">Start Time</label>
+                                <input type="time" 
+                                       class="form-control" 
+                                       id="start_time" 
+                                       name="start_time" 
+                                       required>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="end_time" class="form-label">End Time</label>
+                                <input type="time" 
+                                       class="form-control" 
+                                       id="end_time" 
+                                       name="end_time" 
+                                       required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="timezone" class="form-label">Timezone</label>
+                        <select class="form-select" id="timezone" name="timezone" required></select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="location" class="form-label">Location</label>
+                        <input type="text" class="form-control" id="location" name="location" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Description</label>
+                        <div class="form-text mb-2">
+                            Consider including:
+                            <ul>
+                                <li>What will you do in this event?</li>
+                                <li>How will it help others?</li>
+                                <li>Who can participate?</li>
+                            </ul>
+                        </div>
+                        <textarea class="form-control" id="description" name="description" rows="4" maxlength="1000" required></textarea>
+                        <div class="form-text">
+                            <span id="char_count">0</span>/1000 characters
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">SDG Goals</label>
+                        <div class="card">
+                            <div class="card-body">
+                                <div id="sdg_detection_status" class="text-muted mb-2">
+                                    <small><i class="fas fa-info-circle"></i> SDG goals will be automatically detected from your event description</small>
+                                </div>
+                                <div id="detected_sdgs" class="d-none">
+                                    <div id="sdg_badges" class="mb-2">
+                                        <!-- AI-detected SDG goals will be displayed here -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Hidden input for storing detected SDG goals -->
+                        <input type="hidden" id="sdg_goals" name="sdg_goals" value="">
+                    </div>
+                </div>
             </div>
-            <div class="mb-3">
-                <label for="sdg_goal" class="form-label">SDG Goal</label>
-                <select class="form-select" id="sdg_goal" name="sdg_goal" required>
-                    <option value="" selected disabled>Choose an SDG Goal</option>
-                    {% for i in range(1, 18) %}
-                        <option value="{{ i }}">Goal {{ i }}</option>
-                    {% endfor %}
-                </select>
-            </div>
+
             <div class="text-center">
                 <button type="submit" class="btn btn-primary">Create Event</button>
             </div>
         </form>
     </div>
 </div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/event_creation.js') }}"></script>
 {% endblock %}
