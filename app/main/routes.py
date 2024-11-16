@@ -1,8 +1,8 @@
-from flask import render_template, redirect, url_for, flash, request
+from flask import render_template, redirect, url_for, flash, request, jsonify
 from datetime import date, datetime
 from app.main import bp
 from app import db
-from app.models import Team, Event
+from app.models import Team, Event, TeamMember
 from sqlalchemy import func
 
 @bp.route('/')
@@ -12,41 +12,147 @@ def index():
 @bp.route('/create_event', methods=['GET', 'POST'])
 def create_event():
     if request.method == 'POST':
-        title = request.form['title']
-        description = request.form['description']
-        date_str = request.form['date']
-        start_time = request.form['start_time']
-        end_time = request.form['end_time']
-        
-        # Combine date and time strings into datetime objects
-        start_datetime = datetime.strptime(f"{date_str} {start_time}", '%Y-%m-%d %H:%M')
-        end_datetime = datetime.strptime(f"{date_str} {end_time}", '%Y-%m-%d %H:%M')
-        
-        # Validate that end time is after start time
-        if end_datetime <= start_datetime:
-            flash('End time must be after start time', 'error')
+        try:
+            # Get team information
+            team_choice = request.form.get('team_choice')
+            
+            # Handle team selection/creation
+            if team_choice == 'existing':
+                team_id = request.form.get('selected_team_id')
+                
+                if not team_id:
+                    flash('Please select a team ', 'error')
+                    return redirect(url_for('main.create_event'))
+                
+                team = Team.query.get(team_id)
+                if not team:
+                    flash('Invalid team', 'error')
+                    return redirect(url_for('main.create_event'))
+            else:
+                # Create new team
+                team_name = request.form.get('team_name')
+                team_phrase = request.form.get('team_phrase')
+                team_members = request.form.getlist('team_members[]')
+                
+                if not team_name or not team_phrase or not team_members:
+                    flash('Please provide team name, phrase, and at least one member', 'error')
+                    return redirect(url_for('main.create_event'))
+                
+                team = Team(name=team_name, team_phrase=team_phrase)
+                db.session.add(team)
+                db.session.flush()
+                
+                for i, member_name in enumerate(team_members):
+                    if member_name.strip():
+                        member = TeamMember(
+                            name=member_name.strip(),
+                            team_id=team.id,
+                            is_captain=(i == 0)
+                        )
+                        db.session.add(member)
+
+            # Get event details
+            title = request.form.get('title')
+            description = request.form.get('description')
+            event_date = request.form.get('date')
+            start_time = request.form.get('start_time')
+            end_time = request.form.get('end_time')
+            timezone = request.form.get('timezone')
+            location = request.form.get('location')
+            sdg_goals = request.form.get('sdg_goals')
+
+            if not all([title, description, event_date, start_time, end_time, timezone, location]):
+                flash('Please fill in all event details', 'error')
+                return redirect(url_for('main.create_event'))
+
+            try:
+                start_datetime = datetime.strptime(f"{event_date} {start_time}", '%Y-%m-%d %H:%M')
+                end_datetime = datetime.strptime(f"{event_date} {end_time}", '%Y-%m-%d %H:%M')
+                
+                if end_datetime <= start_datetime:
+                    flash('End time must be after start time', 'error')
+                    return redirect(url_for('main.create_event'))
+            except ValueError:
+                flash('Invalid date or time format', 'error')
+                return redirect(url_for('main.create_event'))
+
+            event = Event(
+                title=title,
+                description=description,
+                start_date=start_datetime,
+                end_date=end_datetime,
+                timezone=timezone,
+                location=location,
+                team_id=team.id,
+                sdg_goals=sdg_goals
+            )
+            db.session.add(event)
+            db.session.commit()
+
+            flash(f'Event "{title}" has been created successfully!', 'success')
+            today_date = date.today().strftime('%Y-%m-%d')
+            
+            # Pass the selected team information back to the template
+            selected_team = {
+                'id': team.id,
+                'name': team.name
+            }
+            
+            return render_template('create_event.html', 
+                                 today_date=today_date,
+                                 selected_team=selected_team)
+
+        except Exception as e:
+            db.session.rollback()
+            flash(f'An error occurred: {str(e)}', 'error')
             return redirect(url_for('main.create_event'))
-        
-        # Assuming you have a way to get the current team
-        team = Team.query.first()
-        
-        new_event = Event(
-            title=title, 
-            description=description, 
-            start_date=start_datetime,
-            end_date=end_datetime,
-            team=team
-        )
-        
-        db.session.add(new_event)
-        db.session.commit()
-        
-        flash('Event created successfully!', 'success')
-        return redirect(url_for('main.index'))
-    
-    # Add today's date for the date picker
+
+    # GET request
     today_date = date.today().strftime('%Y-%m-%d')
-    return render_template('create_event.html', today_date=today_date)
+    return render_template('create_event.html', 
+                         today_date=today_date,
+                         selected_team=None)
+
+@bp.route('/api/search_teams')
+def search_teams():
+    query = request.args.get('q', '')
+    if len(query.strip()) < 2:
+        return jsonify([])
+    
+    # Search for teams by name or member names
+    teams = Team.query.join(TeamMember).filter(
+        db.or_(
+            Team.name.ilike(f'%{query}%'),
+            TeamMember.name.ilike(f'%{query}%')
+        )
+    ).distinct().all()
+    
+    # Format results with team and member information
+    results = []
+    for team in teams:
+        members = [member.name for member in team.members.all()]
+        captain = team.members.filter_by(is_captain=True).first()
+        
+        results.append({
+            'id': team.id,
+            'name': team.name,
+            'member_count': team.members.count(),
+            'members': members,
+            'captain': captain.name if captain else 'No captain'
+        })
+    
+    return jsonify(results)
+
+@bp.route('/api/verify_team', methods=['POST'])
+def verify_team():
+    data = request.get_json()
+    team_id = data.get('team_id')
+    team_phrase = data.get('team_phrase')
+    
+    team = Team.query.get(team_id)
+    if team and team.team_phrase == team_phrase:
+        return jsonify({'verified': True})
+    return jsonify({'verified': False})
 
 @bp.route('/leaderboard')
 def leaderboard():
@@ -66,5 +172,54 @@ def team(team_id):
 @bp.route('/about')
 def about():
     return render_template('about.html')
+
+@bp.route('/api/create_team', methods=['POST'])
+def create_team():
+    try:
+        data = request.get_json()
+        
+        # Validate input
+        if not data.get('name') or not data.get('team_phrase') or not data.get('members'):
+            return jsonify({'message': 'Please fill in all required fields'}), 400
+        
+        # Check for existing teams
+        new_member_names = sorted([m.strip().lower() for m in data['members'] if m.strip()])
+        existing_teams = Team.query.filter(func.lower(Team.name) == data['name'].lower()).all()
+        
+        for team in existing_teams:
+            existing_member_names = sorted([m.name.lower() for m in team.members.all()])
+            if existing_member_names == new_member_names:
+                return jsonify({
+                    'message': 'A team with this name and members already exists'
+                }), 400
+        
+        # Create team and members
+        team = Team(
+            name=data['name'],
+            team_phrase=data['team_phrase']
+        )
+        db.session.add(team)
+        db.session.flush()  # Get the team ID
+        
+        # Add members
+        for i, member_name in enumerate(data['members']):
+            if member_name.strip():
+                member = TeamMember(
+                    name=member_name.strip(),
+                    team_id=team.id,
+                    is_captain=(i == 0)
+                )
+                db.session.add(member)
+        
+        db.session.commit()
+        
+        return jsonify({
+            'message': 'Team created successfully',
+            'team_id': team.id
+        }), 201  # Created status code
+        
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'message': f'An error occurred: {str(e)}'}), 500
 
 # Add any other routes that were in app/routes.py

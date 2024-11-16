@@ -5,10 +5,24 @@
 {% block content %}
 <div class="row justify-content-center">
     <div class="col-md-8">
+        <!-- Separate container for dynamic flash messages -->
+        <div class="flash-messages">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+        </div>
+
         <h1 class="text-center">Create a New Event</h1>
         
-        <!-- Pink notice with alert symbol -->
-        <div class="alert alert-custom mb-4">
+        <!-- Static notice - separate from flash messages -->
+        <div class="alert alert-custom static-alert mb-4">
             <i class="fas fa-exclamation-circle"></i> All fields are required to create an event.
         </div>
 
@@ -42,32 +56,11 @@
                             <label for="team_search" class="form-label">Search for your team</label>
                             <input type="text" class="form-control" id="team_search" 
                                    placeholder="Enter team name or member name">
-                            <div id="recent_teams" class="mt-2">
-                                <h6>Recently Used Teams</h6>
-                                <div id="recent_teams_list" class="list-group">
-                                    <!-- Populated by JavaScript -->
-                                </div>
-                            </div>
                             <div id="team_search_results" class="mt-2 list-group">
                                 <!-- Search results populated by JavaScript -->
                             </div>
                         </div>
 
-                        <div id="existing_team_verify" style="display: none;">
-                            <div class="card bg-light">
-                                <div class="card-body">
-                                    <h5 class="card-title" id="selected_team_name"></h5>
-                                    <div class="mb-3">
-                                        <label for="team_phrase_verify" class="form-label">
-                                            Enter your team's secret phrase to continue
-                                        </label>
-                                        <input type="text" class="form-control" id="team_phrase_verify" 
-                                               placeholder="Enter team phrase">
-                                    </div>
-                                    <button class="btn btn-primary" id="verify_team_btn">Verify Team</button>
-                                </div>
-                            </div>
-                        </div>
                     </div>
 
                     <!-- Create New Team Tab -->
@@ -76,6 +69,25 @@
                             <label for="team_name" class="form-label">Team Name</label>
                             <input type="text" class="form-control" id="team_name" 
                                    placeholder="Enter your team name">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Team Members</label>
+                            <div id="team_members_container">
+                                <div class="member-input mb-2">
+                                    <div class="input-group">
+                                        <span class="input-group-text">Captain</span>
+                                        <input type="text" class="form-control" name="team_members[]" 
+                                               placeholder="Enter member name">
+                                    </div>
+                                </div>
+                                <!-- Additional member inputs will be added here -->
+                            </div>
+                            <button type="button" class="btn btn-secondary btn-sm mt-2" id="add_member_btn">
+                                <i class="fas fa-plus"></i> Add Member
+                            </button>
+                            <small class="form-text text-muted">
+                                You can add up to 5 team members including the captain
+                            </small>
                         </div>
 
                         <div class="mb-4">
@@ -97,34 +109,28 @@
                             </div>
                         </div>
 
-                        <div class="mb-3">
-                            <label class="form-label">Team Members</label>
-                            <div id="team_members_container">
-                                <div class="member-input mb-2">
-                                    <div class="input-group">
-                                        <span class="input-group-text">Captain</span>
-                                        <input type="text" class="form-control" name="team_members[]" 
-                                               placeholder="Enter member name">
-                                    </div>
-                                </div>
-                                <!-- Additional member inputs will be added here -->
-                            </div>
-                            <button type="button" class="btn btn-secondary btn-sm mt-2" id="add_member_btn">
-                                <i class="fas fa-plus"></i> Add Member
-                            </button>
-                            <small class="form-text text-muted">
-                                You can add up to 5 team members including the captain
-                            </small>
-                        </div>
-
                         <button class="btn btn-primary" id="create_team_btn">Create Team</button>
                     </div>
                 </div>
             </div>
         </div>
 
+        <!-- Add this right before your event form -->
+        {% if selected_team %}
+        <script>
+            window.selectedTeam = {
+                id: "{{ selected_team.id }}",
+                name: "{{ selected_team.name }}"
+            };
+        </script>
+        {% endif %}
+
         <!-- Event Details Section -->
         <form method="POST" action="{{ url_for('main.create_event') }}" id="event_form">
+            <input type="hidden" id="team_choice" name="team_choice" value="existing">
+            <input type="hidden" id="selected_team_id" name="selected_team_id" value="{{ selected_team.id if selected_team else '' }}">
+            <input type="hidden" id="team_phrase" name="team_phrase" value="">
+            
             <div class="card mb-4">
                 <div class="card-header">
                     <h4>Event Details</h4>
@@ -146,7 +152,8 @@
                                        name="date" 
                                        required
                                        min="{{ today_date }}"
-                                       value="{{ today_date }}">
+                                       value="{{ today_date }}"
+                                       >
                             </div>
                             <div class="col-md-4">
                                 <label for="start_time" class="form-label">Start Time</label>
@@ -154,7 +161,8 @@
                                        class="form-control" 
                                        id="start_time" 
                                        name="start_time" 
-                                       required>
+                                       required
+                                       >
                             </div>
                             <div class="col-md-4">
                                 <label for="end_time" class="form-label">End Time</label>
@@ -162,19 +170,20 @@
                                        class="form-control" 
                                        id="end_time" 
                                        name="end_time" 
-                                       required>
+                                       required
+                                       >
                             </div>
                         </div>
                     </div>
 
                     <div class="mb-3">
                         <label for="timezone" class="form-label">Timezone</label>
-                        <select class="form-select" id="timezone" name="timezone" required></select>
+                        <select class="form-select" id="timezone" name="timezone" required ></select>
                     </div>
 
                     <div class="mb-3">
                         <label for="location" class="form-label">Location</label>
-                        <input type="text" class="form-control" id="location" name="location" required>
+                        <input type="text" class="form-control" id="location" name="location" required >
                     </div>
 
                     <div class="mb-3">
@@ -187,7 +196,7 @@
                                 <li>Who can participate?</li>
                             </ul>
                         </div>
-                        <textarea class="form-control" id="description" name="description" rows="4" maxlength="1000" required></textarea>
+                        <textarea class="form-control" id="description" name="description" rows="4" maxlength="1000" required ></textarea>
                         <div class="form-text">
                             <span id="char_count">0</span>/1000 characters
                         </div>

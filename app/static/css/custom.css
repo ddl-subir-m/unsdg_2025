@@ -100,15 +100,22 @@ h1 {
 
 .member-input {
     position: relative;
+    animation: slideDown 0.3s ease-out;
 }
 
 .remove-member {
-    position: absolute;
-    right: -40px;
-    top: 50%;
-    transform: translateY(-50%);
-    cursor: pointer;
-    color: #dc3545;
+    margin-left: 5px;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 #phrase_preview {
@@ -229,4 +236,36 @@ h1 {
     color: white;
     background-color: #ff1493;
     border-color: #ff1493;
+}
+
+/* Dynamic flash messages */
+.flash-messages {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1050;
+    max-width: 400px;
+}
+
+.flash-messages .alert {
+    margin-bottom: 10px;
+    animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+/* Static alert */
+.static-alert {
+    position: relative;
+    animation: none;
+    margin-bottom: 1rem;
 }
