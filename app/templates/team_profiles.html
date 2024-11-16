@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block title %}Team Profiles{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 class="text-center mb-4">Team Profiles</h1>
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        {% for team, event_count in teams %}
+        <div class="col">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5 class="card-title">{{ team.name }}</h5>
+                    <div class="mb-3">
+                        <small class="text-muted">
+                            <i class="fas fa-calendar-alt"></i> Events: {{ event_count }}
+                        </small>
+                    </div>
+                    <h6 class="card-subtitle mb-2">Team Members:</h6>
+                    <ul class="list-unstyled">
+                        {% for member in team.members %}
+                        <li>
+                            <i class="fas {% if member.is_captain %}fa-crown text-warning{% else %}fa-user{% endif %} me-2"></i>
+                            {{ member.name }}
+                            {% if member.is_captain %}
+                            <small class="text-muted">(Captain)</small>
+                            {% endif %}
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                <div class="card-footer">
+                    <a href="{{ url_for('main.team', team_id=team.id) }}" class="btn btn-outline-pink btn-sm">
+                        <i class="fas fa-info-circle"></i> View Details
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

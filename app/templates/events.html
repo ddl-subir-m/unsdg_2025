@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+
+{% block title %}Events{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!-- Upcoming Events Section -->
+    <section class="mb-5">
+        <h2 class="mb-4">
+            <i class="fas fa-calendar-alt me-2"></i>
+            Upcoming Events
+        </h2>
+        {% if upcoming_events %}
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+            {% for event in upcoming_events %}
+            <div class="col">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ event.title }}</h5>
+                        <h6 class="card-subtitle mb-2 text-muted">
+                            <i class="fas fa-users me-1"></i>
+                            {{ event.team.name }}
+                        </h6>
+                        <p class="card-text">
+                            <i class="far fa-calendar me-1"></i>
+                            {% if event.start_date.date() == event.end_date.date() %}
+                                {{ event.start_date.strftime('%B %d, %Y') }}<br>
+                                {{ event.start_date.strftime('%I:%M %p') }} - {{ event.end_date.strftime('%I:%M %p') }}
+                            {% else %}
+                                {{ event.start_date.strftime('%B %d, %Y %I:%M %p') }} -<br>
+                                {{ event.end_date.strftime('%B %d, %Y %I:%M %p') }}
+                            {% endif %}
+                            <br>
+                            <small class="text-muted">{{ event.timezone }}</small>
+                        </p>
+                        {% if event.location %}
+                        <p class="card-text">
+                            <i class="fas fa-map-marker-alt me-1"></i>
+                            {{ event.location }}
+                        </p>
+                        {% endif %}
+                        {% if event.description %}
+                        <p class="card-text">{{ event.description }}</p>
+                        {% endif %}
+                        <div class="mt-2">
+                            {% for goal in event.sdg_goals.split(',') %}
+                            <span class="badge bg-primary me-1">SDG {{ goal.strip() }}</span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p class="text-muted">No upcoming events scheduled.</p>
+        {% endif %}
+    </section>
+
+    <!-- Past Events Section -->
+    <section>
+        <h2 class="mb-4">
+            <i class="fas fa-history me-2"></i>
+            Past Events
+        </h2>
+        {% if past_events %}
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+            {% for event in past_events %}
+            <div class="col">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ event.title }}</h5>
+                        <h6 class="card-subtitle mb-2 text-muted">
+                            <i class="fas fa-users me-1"></i>
+                            {{ event.team.name }}
+                        </h6>
+                        <p class="card-text">
+                            <i class="far fa-calendar me-1"></i>
+                            {% if event.start_date.date() == event.end_date.date() %}
+                                {{ event.start_date.strftime('%B %d, %Y') }}<br>
+                                {{ event.start_date.strftime('%I:%M %p') }} - {{ event.end_date.strftime('%I:%M %p') }}
+                            {% else %}
+                                {{ event.start_date.strftime('%B %d, %Y %I:%M %p') }} -<br>
+                                {{ event.end_date.strftime('%B %d, %Y %I:%M %p') }}
+                            {% endif %}
+                            <br>
+                            <small class="text-muted">{{ event.timezone }}</small>
+                        </p>
+                        {% if event.location %}
+                        <p class="card-text">
+                            <i class="fas fa-map-marker-alt me-1"></i>
+                            {{ event.location }}
+                        </p>
+                        {% endif %}
+                        {% if event.description %}
+                        <p class="card-text">{{ event.description }}</p>
+                        {% endif %}
+                        <div class="mt-2">
+                            {% for goal in event.sdg_goals.split(',') %}
+                            <span class="badge bg-secondary me-1">SDG {{ goal.strip() }}</span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p class="text-muted">No past events.</p>
+        {% endif %}
+    </section>
+</div>
+{% endblock %} 

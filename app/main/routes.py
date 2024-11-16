@@ -167,7 +167,14 @@ def leaderboard():
 @bp.route('/team/<int:team_id>')
 def team(team_id):
     team = Team.query.get_or_404(team_id)
-    return render_template('team.html', team=team)
+    events_count = Event.query.filter_by(team_id=team_id).count()
+    members_count = TeamMember.query.filter_by(team_id=team_id).count()
+    events = Event.query.filter_by(team_id=team_id).all()
+    return render_template('team.html', 
+                         team=team, 
+                         events=events,
+                         events_count=events_count,
+                         members_count=members_count)
 
 @bp.route('/about')
 def about():
@@ -221,5 +228,38 @@ def create_team():
     except Exception as e:
         db.session.rollback()
         return jsonify({'message': f'An error occurred: {str(e)}'}), 500
+
+@bp.route('/team_profiles')
+def team_profiles():
+    # Get all teams with their members and event counts
+    teams = db.session.query(Team, func.count(Event.id).label('event_count')) \
+        .outerjoin(Event) \
+        .group_by(Team.id) \
+        .order_by(Team.name) \
+        .all()
+    return render_template('team_profiles.html', teams=teams)
+
+@bp.route('/events')
+def events():
+    # Get current datetime in UTC
+    current_date = datetime.utcnow()
+    
+    # Query upcoming events (events with end_date >= current date)
+    upcoming_events = Event.query\
+        .join(Team)\
+        .filter(Event.end_date >= current_date)\
+        .order_by(Event.start_date.asc())\
+        .all()
+    
+    # Query past events (events with end_date < current date)
+    past_events = Event.query\
+        .join(Team)\
+        .filter(Event.end_date < current_date)\
+        .order_by(Event.start_date.desc())\
+        .all()
+    
+    return render_template('events.html', 
+                         upcoming_events=upcoming_events,
+                         past_events=past_events)
 
 # Add any other routes that were in app/routes.py
