@@ -4,6 +4,20 @@
 
 {% block content %}
 <div class="container">
+    <!-- Add flash messages container -->
+    <div class="flash-messages mb-3">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </div>
+
     <!-- Upcoming Events Section -->
     <section class="mb-5">
         <h2 class="mb-4" style="color: #FF69B4;">
@@ -16,7 +30,13 @@
             <div class="col">
                 <div class="card h-100">
                     <div class="card-body">
-                        <h5 class="card-title" style="color: #FF69B4;">{{ event.title }}</h5>
+                        <div class="d-flex justify-content-between align-items-start">
+                            <h5 class="card-title" style="color: #FF69B4;">{{ event.title }}</h5>
+                            <button class="btn btn-outline-danger btn-sm" 
+                                    onclick="showDeleteEventModal('{{ event.id }}', '{{ event.title }}')">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
                         <h6 class="card-subtitle mb-2 text-muted">
                             <i class="fas fa-users me-1" style="color: #FF69B4;"></i>
                             {{ event.team.name }}
@@ -51,6 +71,11 @@
                             {% endfor %}
                         </div>
                         {% endif %}
+                    </div>
+                    <div class="card-footer bg-transparent border-top d-flex justify-content-between align-items-center">
+                        <a href="{{ url_for('main.team', team_id=event.team_id) }}" class="btn btn-outline-pink btn-sm">
+                            <i class="fas fa-info-circle me-1"></i> Team Details
+                        </a>
                     </div>
                 </div>
             </div>
@@ -109,6 +134,11 @@
                         </div>
                         {% endif %}
                     </div>
+                    <div class="card-footer bg-transparent border-top d-flex justify-content-between align-items-center">
+                        <a href="{{ url_for('main.team', team_id=event.team_id) }}" class="btn btn-outline-pink btn-sm">
+                            <i class="fas fa-info-circle me-1"></i> Team Details
+                        </a>
+                    </div>
                 </div>
             </div>
             {% endfor %}
@@ -117,5 +147,116 @@
         <p class="text-muted">No past events.</p>
         {% endif %}
     </section>
+
+    <!-- Delete Event Modal -->
+    <div class="modal fade" id="deleteEventModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Delete Event</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to delete "<span id="eventTitle"></span>"?</p>
+                    <div class="mb-3">
+                        <label for="teamPhrase" class="form-label">Please enter your team phrase to confirm:</label>
+                        <div class="input-group">
+                            <input type="password" class="form-control" id="teamPhrase">
+                            <button class="btn btn-outline-secondary" type="button" id="togglePassword">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-danger" onclick="confirmDeleteEvent()">Delete</button>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+let eventToDelete = null;
+
+// Add the flash message function
+function showFlashMessage(message, category) {
+    const flashContainer = document.querySelector('.flash-messages');
+    if (flashContainer) {
+        const alert = document.createElement('div');
+        alert.className = `alert alert-${category} alert-dismissible fade show`;
+        alert.innerHTML = `
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        `;
+        flashContainer.appendChild(alert);
+    }
+}
+
+function showDeleteEventModal(eventId, eventTitle) {
+    eventToDelete = eventId;
+    document.getElementById('eventTitle').textContent = eventTitle;
+    new bootstrap.Modal(document.getElementById('deleteEventModal')).show();
+}
+
+function confirmDeleteEvent() {
+    const teamPhrase = document.getElementById('teamPhrase').value;
+    
+    fetch(`/api/events/${eventToDelete}`, {
+        method: 'DELETE',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            team_phrase: teamPhrase
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.message === 'Event deleted successfully') {
+            showFlashMessage('Event deleted successfully!', 'success');
+            // Hide the modal
+            const modal = bootstrap.Modal.getInstance(document.getElementById('deleteEventModal'));
+            modal.hide();
+            // Reload the page after a short delay to show the flash message
+            setTimeout(() => {
+                location.reload();
+            }, 1000);
+        } else {
+            // showFlashMessage(data.message, 'danger');
+            alert(data.message);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('An error occurred while deleting the event');
+    });
+}
+
+// Wrap the event listener in DOMContentLoaded
+document.addEventListener('DOMContentLoaded', function() {
+    const toggleButton = document.getElementById('togglePassword');
+    if (toggleButton) {
+        toggleButton.addEventListener('click', function() {
+            const teamPhrase = document.getElementById('teamPhrase');
+            const icon = toggleButton.querySelector('i.fas');
+            
+            if (teamPhrase && icon) {
+                if (teamPhrase.type === 'password') {
+                    teamPhrase.type = 'text';
+                    icon.classList.remove('fa-eye');
+                    icon.classList.add('fa-eye-slash');
+                } else {
+                    teamPhrase.type = 'password';
+                    icon.classList.remove('fa-eye-slash');
+                    icon.classList.add('fa-eye');
+                }
+            }
+        });
+    }
+});
+</script>
 {% endblock %} 

@@ -411,18 +411,22 @@ h1, .world-helper-title {
     justify-content: center;
     font-weight: bold;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    border: 3px solid;
 }
 
 .gold .podium-rank {
     color: #FFD700;
+    border-color: #FFD700;
 }
 
 .silver .podium-rank {
     color: #C0C0C0;
+    border-color: #C0C0C0;
 }
 
 .bronze .podium-rank {
     color: #CD7F32;
+    border-color: #CD7F32;
 }
 
 .team-name {
@@ -449,21 +453,23 @@ h1, .world-helper-title {
 }
 
 .trophy-icon i {
-    font-size: 40px;
+    font-size: 60px;
     filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
 }
 
 .gold .trophy-icon i {
     color: #FFD700;
-    font-size: 50px; /* Larger trophy for first place */
+    font-size: 70px;
 }
 
 .silver .trophy-icon i {
     color: #C0C0C0;
+    font-size: 60px;
 }
 
 .bronze .trophy-icon i {
     color: #CD7F32;
+    font-size: 60px;
 }
 
 /* Floating animation */

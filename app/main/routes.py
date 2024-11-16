@@ -8,6 +8,7 @@ from openai import OpenAI
 import json
 import os
 import random
+import pytz
 
 
 client = OpenAI(api_key=os.environ.get('OPENAI_API_KEY'))
@@ -223,10 +224,10 @@ def verify_team():
     team_id = data.get('team_id')
     team_phrase = data.get('team_phrase')
     
-    team = Team.query.get(team_id)
-    if team and team.team_phrase == team_phrase:
-        return jsonify({'verified': True})
-    return jsonify({'verified': False})
+    team = Team.query.get_or_404(team_id)
+    verified = team.team_phrase == team_phrase
+    
+    return jsonify({'verified': verified})
 
 @bp.route('/leaderboard')
 def leaderboard():
@@ -377,23 +378,33 @@ def team_profiles():
 
 @bp.route('/events')
 def events():
-    # Get current datetime for comparison
-    now = datetime.utcnow()
+    from datetime import datetime
+    import pytz
     
-    # Query upcoming events (start date is in the future)
-    upcoming_events = Event.query.filter(Event.start_date > now)\
-        .order_by(Event.start_date.asc())\
-        .all()
+    all_events = Event.query.all()
+    upcoming_events = []
+    past_events = []
+    now = datetime.utcnow()  # Get naive UTC time
     
-    # Query past events (end date is in the past)
-    past_events = Event.query.filter(Event.end_date <= now)\
-        .order_by(Event.start_date.desc())\
-        .all()
+    for event in all_events:
+        # Convert event times to naive UTC for comparison
+        event_tz = pytz.timezone(event.timezone)
+        event_start = event_tz.localize(event.start_date).astimezone(pytz.UTC).replace(tzinfo=None)
+        event_end = event_tz.localize(event.end_date).astimezone(pytz.UTC).replace(tzinfo=None)
+        
+        if event_start > now:
+            upcoming_events.append(event)
+        else:
+            past_events.append(event)
+    
+    upcoming_events.sort(key=lambda x: x.start_date)
+    past_events.sort(key=lambda x: x.start_date, reverse=True)
     
     return render_template('events.html', 
                          upcoming_events=upcoming_events,
                          past_events=past_events,
-                         SDG_DESCRIPTIONS=SDG_DESCRIPTIONS)
+                         SDG_DESCRIPTIONS=SDG_DESCRIPTIONS,
+                         now=now)
 
 @bp.route('/api/analyze_sdgs', methods=['POST'])
 def analyze_sdgs():
@@ -425,3 +436,51 @@ def get_team_bingo_card(team_id):
         'card_numbers': bingo_card.card_numbers,
         'marked_numbers': bingo_card.marked_numbers
     })
+
+@bp.route('/api/events/<int:event_id>', methods=['DELETE'])
+def delete_event(event_id):
+    try:
+        data = request.get_json()
+        team_phrase = data.get('team_phrase')
+        
+        # Get the event
+        event = Event.query.get_or_404(event_id)
+        team_id = event.team_id
+        
+        # Convert event time to UTC for comparison
+        event_tz = pytz.timezone(event.timezone)
+        event_start_utc = event_tz.localize(event.start_date).astimezone(pytz.UTC)
+        now_utc = datetime.now(pytz.UTC)
+        
+        # Check if event is in the future
+        if event_start_utc <= now_utc:
+            return jsonify({'message': 'Cannot delete past events'}), 400
+        
+        # Verify team phrase
+        team = Team.query.get(event.team_id)
+        if not team or team.team_phrase != team_phrase:
+            return jsonify({'message': 'Invalid team phrase'}), 403
+        
+        # Delete the event
+        db.session.delete(event)
+                # Update bingo card
+        bingo_card = BingoCard.query.filter_by(team_id=team_id).first()
+        if bingo_card:
+            # Get all remaining events for this team
+            remaining_events = Event.query.filter_by(team_id=team_id).all()
+            
+            # Collect all SDG goals from remaining events
+            marked = set()
+            for remaining_event in remaining_events:
+                if remaining_event.sdg_goals and 'goals' in remaining_event.sdg_goals:
+                    marked.update(remaining_event.sdg_goals['goals'])
+            
+            # Update bingo card with remaining marked numbers
+            bingo_card.marked_numbers = list(marked)
+        db.session.commit()
+        
+        return jsonify({'message': 'Event deleted successfully'})
+    
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'message': f'An error occurred: {str(e)}'}), 500

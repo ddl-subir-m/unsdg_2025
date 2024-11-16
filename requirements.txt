@@ -5,3 +5,4 @@ Werkzeug==2.2.3
 Flask-Migrate
 openai>=1.54.0
 python-dotenv>=1.0.0
+pytz==2024.2
