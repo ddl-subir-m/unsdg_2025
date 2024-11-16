@@ -1,3 +1,5 @@
+from dotenv import load_dotenv
+
 from flask import Flask, render_template, url_for
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
@@ -5,7 +7,7 @@ from config import Config
 
 db = SQLAlchemy()
 migrate = Migrate()
-
+load_dotenv()
 
 def create_app(config_class=Config):
     app = Flask(__name__)

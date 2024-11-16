@@ -6,7 +6,7 @@
 <div class="container">
     <!-- Upcoming Events Section -->
     <section class="mb-5">
-        <h2 class="mb-4">
+        <h2 class="mb-4" style="color: #FF69B4;">
             <i class="fas fa-calendar-alt me-2"></i>
             Upcoming Events
         </h2>
@@ -16,13 +16,13 @@
             <div class="col">
                 <div class="card h-100">
                     <div class="card-body">
-                        <h5 class="card-title">{{ event.title }}</h5>
+                        <h5 class="card-title" style="color: #FF69B4;">{{ event.title }}</h5>
                         <h6 class="card-subtitle mb-2 text-muted">
-                            <i class="fas fa-users me-1"></i>
+                            <i class="fas fa-users me-1" style="color: #FF69B4;"></i>
                             {{ event.team.name }}
                         </h6>
                         <p class="card-text">
-                            <i class="far fa-calendar me-1"></i>
+                            <i class="far fa-calendar me-1" style="color: #FF69B4;"></i>
                             {% if event.start_date.date() == event.end_date.date() %}
                                 {{ event.start_date.strftime('%B %d, %Y') }}<br>
                                 {{ event.start_date.strftime('%I:%M %p') }} - {{ event.end_date.strftime('%I:%M %p') }}
@@ -35,7 +35,7 @@
                         </p>
                         {% if event.location %}
                         <p class="card-text">
-                            <i class="fas fa-map-marker-alt me-1"></i>
+                            <i class="fas fa-map-marker-alt me-1" style="color: #FF69B4;"></i>
                             {{ event.location }}
                         </p>
                         {% endif %}
@@ -43,9 +43,13 @@
                         <p class="card-text">{{ event.description }}</p>
                         {% endif %}
                         <div class="mt-2">
-                            {% for goal in event.sdg_goals.split(',') %}
-                            <span class="badge bg-primary me-1">SDG {{ goal.strip() }}</span>
-                            {% endfor %}
+                            {% if event.sdg_goals %}
+                                {% for goal in event.sdg_goals.goals %}
+                                <span class="badge {% if goal == event.sdg_goals.primary %}bg-primary{% else %}bg-secondary{% endif %} me-1">
+                                    SDG {{ goal }}: {{ SDG_DESCRIPTIONS[goal] }}
+                                </span>
+                                {% endfor %}
+                            {% endif %}
                         </div>
                     </div>
                 </div>
@@ -59,7 +63,7 @@
 
     <!-- Past Events Section -->
     <section>
-        <h2 class="mb-4">
+        <h2 class="mb-4" style="color: #FF69B4;">
             <i class="fas fa-history me-2"></i>
             Past Events
         </h2>
@@ -69,13 +73,13 @@
             <div class="col">
                 <div class="card h-100">
                     <div class="card-body">
-                        <h5 class="card-title">{{ event.title }}</h5>
+                        <h5 class="card-title" style="color: #FF69B4;">{{ event.title }}</h5>
                         <h6 class="card-subtitle mb-2 text-muted">
-                            <i class="fas fa-users me-1"></i>
+                            <i class="fas fa-users me-1" style="color: #FF69B4;"></i>
                             {{ event.team.name }}
                         </h6>
                         <p class="card-text">
-                            <i class="far fa-calendar me-1"></i>
+                            <i class="far fa-calendar me-1" style="color: #FF69B4;"></i>
                             {% if event.start_date.date() == event.end_date.date() %}
                                 {{ event.start_date.strftime('%B %d, %Y') }}<br>
                                 {{ event.start_date.strftime('%I:%M %p') }} - {{ event.end_date.strftime('%I:%M %p') }}
@@ -88,7 +92,7 @@
                         </p>
                         {% if event.location %}
                         <p class="card-text">
-                            <i class="fas fa-map-marker-alt me-1"></i>
+                            <i class="fas fa-map-marker-alt me-1" style="color: #FF69B4;"></i>
                             {{ event.location }}
                         </p>
                         {% endif %}
@@ -96,9 +100,13 @@
                         <p class="card-text">{{ event.description }}</p>
                         {% endif %}
                         <div class="mt-2">
-                            {% for goal in event.sdg_goals.split(',') %}
-                            <span class="badge bg-secondary me-1">SDG {{ goal.strip() }}</span>
-                            {% endfor %}
+                            {% if event.sdg_goals %}
+                                {% for goal in event.sdg_goals.goals %}
+                                <span class="badge {% if goal == event.sdg_goals.primary %}bg-primary{% else %}bg-secondary{% endif %} me-1">
+                                    SDG {{ goal }}: {{ SDG_DESCRIPTIONS[goal] }}
+                                </span>
+                                {% endfor %}
+                            {% endif %}
                         </div>
                     </div>
                 </div>

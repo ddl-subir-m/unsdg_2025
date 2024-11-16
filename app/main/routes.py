@@ -4,6 +4,57 @@ from app.main import bp
 from app import db
 from app.models import Team, Event, TeamMember
 from sqlalchemy import func
+from openai import OpenAI
+import json
+import os
+
+
+client = OpenAI(api_key=os.environ.get('OPENAI_API_KEY'))
+
+SDG_DESCRIPTIONS = {
+    1: "No Poverty",
+    2: "Zero Hunger",
+    3: "Good Health and Well-being",
+    4: "Quality Education",
+    5: "Gender Equality",
+    6: "Clean Water and Sanitation",
+    7: "Affordable and Clean Energy",
+    8: "Decent Work and Economic Growth",
+    9: "Industry, Innovation and Infrastructure",
+    10: "Reduced Inequalities",
+    11: "Sustainable Cities and Communities",
+    12: "Responsible Consumption and Production",
+    13: "Climate Action",
+    14: "Life Below Water",
+    15: "Life on Land",
+    16: "Peace, Justice and Strong Institutions",
+    17: "Partnerships for the Goals"
+}
+
+def analyze_sdg_goals(description):
+    prompt = f"""Given the following event description, identify between 1 and 5 UN Sustainable Development Goals (SDGs) it aligns with most strongly.
+    Return only a JSON object with two fields: 
+    - 'goals': array of SDG numbers (1-17), containing 1-5 goals, ordered by relevance
+    - 'primary': the main SDG number (the first goal in the goals array)
+    
+    Only include goals that are clearly relevant to the event. If the description is vague or only matches 1-2 goals, that's fine.
+    
+    Event description: {description}
+    """
+    
+    try:
+        response = client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[{"role": "user", "content": prompt}],
+            temperature=0.2,
+            response_format={ "type": "json_object" }
+        )
+        result = json.loads(response.choices[0].message.content)
+        result['goals'] = result['goals'][:5]
+        return result
+    except Exception as e:
+        print(f"Error analyzing SDGs: {e}")
+        return {"goals": [], "primary": None}
 
 @bp.route('/')
 def index():
@@ -76,6 +127,8 @@ def create_event():
                 flash('Invalid date or time format', 'error')
                 return redirect(url_for('main.create_event'))
 
+            sdg_analysis = analyze_sdg_goals(description)
+            
             event = Event(
                 title=title,
                 description=description,
@@ -84,7 +137,7 @@ def create_event():
                 timezone=timezone,
                 location=location,
                 team_id=team.id,
-                sdg_goals=sdg_goals
+                sdg_goals=sdg_analysis
             )
             db.session.add(event)
             db.session.commit()
@@ -262,4 +315,22 @@ def events():
                          upcoming_events=upcoming_events,
                          past_events=past_events)
 
+@bp.route('/api/analyze_sdgs', methods=['POST'])
+def analyze_sdgs():
+    try:
+        data = request.get_json()
+        description = data.get('description', '')
+        
+        if not description:
+            return jsonify({'message': 'Description is required'}), 400
+            
+        result = analyze_sdg_goals(description)
+        return jsonify(result)
+    except Exception as e:
+        return jsonify({'message': str(e)}), 500
+
 # Add any other routes that were in app/routes.py
+
+@bp.context_processor
+def utility_processor():
+    return dict(SDG_DESCRIPTIONS=SDG_DESCRIPTIONS)

@@ -221,14 +221,14 @@ h1 {
 }
 
 .btn-outline-pink {
-    color: #ff1493;
-    border-color: #ff1493;
+    color: #FF69B4;
+    border-color: #FF69B4;
 }
 
 .btn-outline-pink:hover {
-    color: white;
-    background-color: #ff1493;
-    border-color: #ff1493;
+    color: #fff;
+    background-color: #FF69B4;
+    border-color: #FF69B4;
 }
 
 /* When copy is successful */
@@ -268,4 +268,47 @@ h1 {
     position: relative;
     animation: none;
     margin-bottom: 1rem;
+}
+
+/* Pink theme styles */
+.btn-outline-pink {
+    color: #FF69B4;
+    border-color: #FF69B4;
+}
+
+.btn-outline-pink:hover {
+    color: #fff;
+    background-color: #FF69B4;
+    border-color: #FF69B4;
+}
+
+.card {
+    border-color: #FFE4E1;
+    transition: transform 0.2s ease-in-out;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 15px rgba(255, 105, 180, 0.2);
+}
+
+.card-footer {
+    border-color: #FFE4E1;
+}
+
+/* Add these styles for SDG badges */
+.badge .btn-close {
+    padding: 0.25em 0.25em;
+    font-size: 0.75em;
+    opacity: 0.5;
+    transition: opacity 0.2s;
+}
+
+.badge .btn-close:hover {
+    opacity: 1;
+}
+
+.badge {
+    position: relative;
+    padding-right: 1.5em;
 }

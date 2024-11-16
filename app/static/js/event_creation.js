@@ -342,6 +342,72 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
+
+    // Add this after the timezone population code (around line 235)
+    const descriptionInput = document.getElementById('description');
+    const sdgDetectionStatus = document.getElementById('sdg_detection_status');
+    const detectedSdgs = document.getElementById('detected_sdgs');
+    const sdgBadges = document.getElementById('sdg_badges');
+
+    if (descriptionInput) {
+        let typingTimer;
+        const doneTypingInterval = 1000;
+
+        descriptionInput.addEventListener('keyup', () => {
+            clearTimeout(typingTimer);
+            if (descriptionInput.value.trim()) {
+                sdgDetectionStatus.innerHTML = '<small><i class="fas fa-spinner fa-spin"></i> Analyzing description...</small>';
+                typingTimer = setTimeout(detectSdgs, doneTypingInterval);
+            } else {
+                // Clear SDG badges and reset status when description is empty
+                sdgDetectionStatus.innerHTML = '<small><i class="fas fa-info-circle"></i> SDG goals will be automatically detected from your event description</small>';
+                detectedSdgs.classList.add('d-none');
+                sdgBadges.innerHTML = '';
+                document.getElementById('sdg_goals').value = '';
+            }
+        });
+
+        async function detectSdgs() {
+            const description = descriptionInput.value;
+            if (!description.trim()) return;
+
+            try {
+                const response = await fetch('/api/analyze_sdgs', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ description })
+                });
+
+                const data = await response.json();
+                
+                if (response.ok) {
+                    sdgDetectionStatus.innerHTML = '<small><i class="fas fa-check text-success"></i> SDG goals detected</small>';
+                    detectedSdgs.classList.remove('d-none');
+                    
+                    // Update badges with remove buttons
+                    sdgBadges.innerHTML = data.goals.map(goal => `
+                        <span class="badge ${goal === data.primary ? 'bg-primary' : 'bg-secondary'} me-1 mb-1">
+                            SDG ${goal}: ${window.SDG_DESCRIPTIONS[goal]}
+                            <button type="button" class="btn-close btn-close-white ms-2" 
+                                    aria-label="Remove" 
+                                    onclick="removeSDGBadge(this, ${goal}, ${goal === data.primary})">
+                            </button>
+                        </span>
+                    `).join('');
+                    
+                    // Update hidden input
+                    document.getElementById('sdg_goals').value = JSON.stringify(data);
+                } else {
+                    throw new Error(data.message);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                sdgDetectionStatus.innerHTML = '<small><i class="fas fa-exclamation-circle text-danger"></i> Error detecting SDGs</small>';
+            }
+        }
+    }
 });
 
 // Utility function for debouncing
@@ -368,5 +434,38 @@ async function showFlashMessage(message, category) {
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         `;
         flashContainer.appendChild(alert);
+    }
+}
+
+// Add this function outside the existing event listeners
+function removeSDGBadge(button, goalToRemove, isPrimary) {
+    const badge = button.parentElement;
+    const sdgGoalsInput = document.getElementById('sdg_goals');
+    
+    // Get current SDG goals data
+    let currentData = JSON.parse(sdgGoalsInput.value);
+    
+    // Remove the goal from the array
+    currentData.goals = currentData.goals.filter(goal => goal !== goalToRemove);
+    
+    // If we removed the primary goal and there are other goals left,
+    // make the first remaining goal the primary
+    if (isPrimary && currentData.goals.length > 0) {
+        currentData.primary = currentData.goals[0];
+    } else if (currentData.goals.length === 0) {
+        // If no goals left, reset primary to null
+        currentData.primary = null;
+    }
+    
+    // Update the hidden input
+    sdgGoalsInput.value = JSON.stringify(currentData);
+    
+    // Remove the badge from display
+    badge.remove();
+    
+    // If no badges left, hide the container and reset status
+    if (currentData.goals.length === 0) {
+        detectedSdgs.classList.add('d-none');
+        sdgDetectionStatus.innerHTML = '<small><i class="fas fa-info-circle"></i> SDG goals will be automatically detected from your event description</small>';
     }
 }

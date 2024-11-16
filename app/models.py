@@ -1,5 +1,7 @@
 from app import db
 from datetime import datetime
+import json
+from sqlalchemy.types import TypeDecorator, Text
 
 
 class User(db.Model):
@@ -15,6 +17,19 @@ class Team(db.Model):
     members = db.relationship('TeamMember', backref='team', lazy='dynamic')
     events = db.relationship('Event', backref='team', lazy='dynamic')
 
+class JSONType(TypeDecorator):
+    impl = Text
+
+    def process_bind_param(self, value, dialect):
+        if value is None:
+            return None
+        return json.dumps(value)
+
+    def process_result_value(self, value, dialect):
+        if value is None:
+            return None
+        return json.loads(value)
+
 class Event(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(100), nullable=False)
@@ -24,7 +39,7 @@ class Event(db.Model):
     timezone = db.Column(db.String(50), nullable=False)
     location = db.Column(db.String(100))
     team_id = db.Column(db.Integer, db.ForeignKey('team.id'), nullable=False)
-    sdg_goals = db.Column(db.String(100))
+    sdg_goals = db.Column(JSONType)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
 class TeamMember(db.Model):

@@ -125,6 +125,11 @@
         </script>
         {% endif %}
 
+        <!-- Add this right after your existing script tags -->
+        <script>
+            window.SDG_DESCRIPTIONS = JSON.parse('{{ SDG_DESCRIPTIONS|tojson|safe }}');
+        </script>
+
         <!-- Event Details Section -->
         <form method="POST" action="{{ url_for('main.create_event') }}" id="event_form">
             <input type="hidden" id="team_choice" name="team_choice" value="existing">
