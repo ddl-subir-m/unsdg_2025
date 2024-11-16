@@ -1,152 +1,92 @@
-body {
-    font-family: 'Arial', sans-serif;
-    background-color: #fff0f5; /* Light pink background */
+:root {
+    /* Primary pink colors */
+    --pink-primary: #FF1493;    /* Deep pink - main brand color */
+    --pink-secondary: #FF69B4;  /* Hot pink - secondary color */
+    --pink-light: #FFE6F0;      /* Light pink - backgrounds */
+    --pink-border: #FFCCE6;     /* Border pink */
+    --pink-hover: #FF1493;      /* Hover state pink */
+    --pink-dark: #4a0e1c;       /* Dark pink for contrast */
 }
 
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: var(--pink-light);
+}
+
+/* Navbar styles */
 .navbar {
-    background-color: #ff69b4 !important; /* Hot pink navbar */
+    background-color: var(--pink-secondary) !important;
 }
 
 .navbar-brand, .nav-link {
-    color: #4a0e1c !important; /* Dark pink, almost brown, for better contrast */
-    font-weight: bold; /* Make the text bold for better visibility */
-    transition: color 0.3s ease; /* Smooth transition for color change */
+    color: var(--pink-dark) !important;
+    font-weight: bold;
+    transition: color 0.3s ease;
 }
 
 .navbar-brand:hover, .nav-link:hover {
-    color: #ffffff !important; /* White text on hover */
-    text-shadow: 1px 1px 2px #4a0e1c; /* Text shadow for better readability */
+    color: #ffffff !important;
+    text-shadow: 1px 1px 2px var(--pink-dark);
 }
 
-/* Add a background color change on hover for even better visibility */
 .nav-item:hover {
-    background-color: rgba(255, 20, 147, 0.7); /* Semi-transparent deep pink */
-    border-radius: 5px; /* Rounded corners for the hover effect */
+    background-color: rgba(255, 20, 147, 0.7);
+    border-radius: 5px;
 }
 
+/* Container styles */
 .container {
     background-color: #ffffff;
     border-radius: 5px;
     padding: 20px;
-    box-shadow: 0 0 10px rgba(255, 105, 180, 0.1); /* Pink shadow */
+    box-shadow: 0 0 10px rgba(255, 105, 180, 0.1);
 }
 
-h1 {
-    color: #ff1493; /* Deep pink for headings */
+/* Typography */
+h1, .world-helper-title {
+    color: var(--pink-primary);
     margin-bottom: 20px;
 }
 
+.text-pink {
+    color: var(--pink-primary) !important;
+}
+
+/* Button styles */
 .btn-primary {
-    background-color: #ff69b4; /* Hot pink buttons */
-    border-color: #ff69b4;
+    background-color: var(--pink-secondary);
+    border-color: var(--pink-secondary);
 }
 
 .btn-primary:hover {
-    background-color: #ff1493; /* Deep pink on hover */
-    border-color: #ff1493;
+    background-color: var(--pink-primary);
+    border-color: var(--pink-primary);
 }
 
+.btn-outline-pink {
+    color: var(--pink-secondary);
+    border-color: var(--pink-secondary);
+}
+
+.btn-outline-pink:hover {
+    color: #fff;
+    background-color: var(--pink-secondary);
+    border-color: var(--pink-secondary);
+}
+
+.btn-outline-pink.btn-success {
+    color: white;
+    background-color: var(--pink-primary);
+    border-color: var(--pink-primary);
+}
+
+/* Form styles */
 .form-control:focus {
-    border-color: #ff69b4;
+    border-color: var(--pink-secondary);
     box-shadow: 0 0 0 0.2rem rgba(255, 105, 180, 0.25);
 }
 
-.embed-responsive {
-    margin-top: 20px;
-    margin-bottom: 20px;
-}
-
-.world-helper-title {
-    color: #ff1493; /* Deep pink for the title */
-    font-weight: bold;
-}
-
-/* Add this to ensure the hamburger menu icon is visible on mobile */
-.navbar-toggler-icon {
-    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba(74, 14, 28, 1)' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e") !important;
-}
-
-/* Team Selection Styling */
-.nav-tabs .nav-link {
-    color: #666;
-    border: 1px solid #dee2e6;
-    margin-right: 5px;
-}
-
-.nav-tabs .nav-link.active {
-    color: #ff1493;
-    font-weight: bold;
-}
-
-.team-card {
-    transition: all 0.3s ease;
-}
-
-.team-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-}
-
-#recent_teams_list .list-group-item,
-#team_search_results .list-group-item {
-    cursor: pointer;
-    transition: background-color 0.2s ease;
-}
-
-#recent_teams_list .list-group-item:hover,
-#team_search_results .list-group-item:hover {
-    background-color: #f8f9fa;
-}
-
-.member-input {
-    position: relative;
-    animation: slideDown 0.3s ease-out;
-}
-
-.remove-member {
-    margin-left: 5px;
-}
-
-@keyframes slideDown {
-    from {
-        opacity: 0;
-        transform: translateY(-10px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-#phrase_preview {
-    font-size: 1.1em;
-    font-weight: bold;
-    text-align: center;
-    margin-top: 10px;
-    word-break: break-word;
-}
-
-.team-phrase-generator .form-select {
-    margin-bottom: 10px;
-}
-
-/* Animation for adding new member inputs */
-@keyframes slideDown {
-    from {
-        opacity: 0;
-        transform: translateY(-10px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-.member-input {
-    animation: slideDown 0.3s ease-out;
-}
-
-/* Add these styles for SDG badges */
+/* SDG Badge styles */
 .sdg-badge {
     display: inline-block;
     padding: 0.5em 1em;
@@ -155,7 +95,7 @@ h1 {
     font-size: 0.9em;
     font-weight: 500;
     color: white;
-    background-color: #ff1493;
+    background-color: var(--pink-primary);
     transition: transform 0.2s;
     white-space: nowrap;
 }
@@ -188,7 +128,7 @@ h1 {
     align-items: center;
 }
 
-/* Add these styles for the copy button */
+/* Copy button styles */
 #copy_phrase_btn {
     transition: all 0.3s ease;
 }
@@ -197,106 +137,38 @@ h1 {
     transform: scale(1.05);
 }
 
+/* Alert styles */
 .alert-custom {
-    background-color: #ffe6f0;
-    border-color: #ffcce6;
-    color: #ff1493;
+    background-color: var(--pink-light);
+    border-color: var(--pink-border);
+    color: var(--pink-primary);
 }
 
 .alert-custom i {
     margin-right: 8px;
 }
 
-/* Pink theme for phrase generator */
 .alert-phrase {
-    background-color: #ffe6f0;
-    border-color: #ffcce6;
-    color: #ff1493;
+    background-color: var(--pink-light);
+    border-color: var(--pink-border);
+    color: var(--pink-primary);
 }
 
-.alert-phrase.alert-success {
-    background-color: #ffe6f0;
-    border-color: #ffcce6;
-    color: #ff1493;
+/* Theme classes */
+.theme-pink {
+    color: var(--pink-primary);
 }
 
-.btn-outline-pink {
-    color: #FF69B4;
-    border-color: #FF69B4;
-}
-
-.btn-outline-pink:hover {
-    color: #fff;
-    background-color: #FF69B4;
-    border-color: #FF69B4;
-}
-
-/* When copy is successful */
-.btn-outline-pink.btn-success {
+.bg-theme-pink {
+    background-color: var(--pink-primary);
     color: white;
-    background-color: #ff1493;
-    border-color: #ff1493;
 }
 
-/* Dynamic flash messages */
-.flash-messages {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    z-index: 1050;
-    max-width: 400px;
+.border-theme-pink {
+    border-color: var(--pink-primary);
 }
 
-.flash-messages .alert {
-    margin-bottom: 10px;
-    animation: slideIn 0.3s ease-out;
-}
-
-@keyframes slideIn {
-    from {
-        transform: translateX(100%);
-        opacity: 0;
-    }
-    to {
-        transform: translateX(0);
-        opacity: 1;
-    }
-}
-
-/* Static alert */
-.static-alert {
-    position: relative;
-    animation: none;
-    margin-bottom: 1rem;
-}
-
-/* Pink theme styles */
-.btn-outline-pink {
-    color: #FF69B4;
-    border-color: #FF69B4;
-}
-
-.btn-outline-pink:hover {
-    color: #fff;
-    background-color: #FF69B4;
-    border-color: #FF69B4;
-}
-
-.card {
-    border-color: #FFE4E1;
-    transition: transform 0.2s ease-in-out;
-}
-
-.card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 4px 15px rgba(255, 105, 180, 0.2);
-}
-
-.card-footer {
-    border-color: #FFE4E1;
-}
-
-/* Add these styles for SDG badges */
+/* Badge close button styles */
 .badge .btn-close {
     padding: 0.25em 0.25em;
     font-size: 0.75em;
@@ -311,4 +183,376 @@ h1 {
 .badge {
     position: relative;
     padding-right: 1.5em;
+}
+
+/* Bingo Card Styles */
+.bingo-card {
+    margin: 20px 0;
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.bingo-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.bingo-row {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+}
+
+.bingo-cell {
+    width: 80px;
+    height: 80px;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    background: #f8f9fa;
+    transition: all 0.3s ease;
+}
+
+.bingo-cell.empty {
+    background: #eee;
+    border-style: dashed;
+}
+
+.bingo-cell.marked {
+    background: var(--pink-light);
+    border-color: var(--pink-primary);
+}
+
+.bingo-content {
+    text-align: center;
+    position: relative;
+}
+
+.sdg-number {
+    font-size: 1.5em;
+    font-weight: bold;
+    color: #333;
+}
+
+.bingo-cell.marked .sdg-number {
+    color: var(--pink-primary);
+}
+
+.sdg-tooltip {
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0,0,0,0.8);
+    color: white;
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-size: 0.8em;
+    white-space: nowrap;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+    z-index: 1000;
+}
+
+.bingo-cell:hover .sdg-tooltip {
+    opacity: 1;
+    visibility: visible;
+    bottom: 120%;
+}
+
+.bingo-legend {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.legend-box {
+    width: 20px;
+    height: 20px;
+    border: 2px solid #ddd;
+    border-radius: 4px;
+    background: #f8f9fa;
+}
+
+.legend-box.marked {
+    background: var(--pink-light);
+    border-color: var(--pink-primary);
+}
+
+/* SDG Goals Grid Styles */
+.sdg-goals-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 0.75rem;
+    margin-top: 1rem;
+}
+
+.sdg-goal-card {
+    position: relative;
+    padding: 0.75rem;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    background: #f8f9fa;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    font-size: 0.9rem;
+}
+
+.sdg-goal-card.achieved {
+    border-color: var(--pink-primary);
+    background: var(--pink-light);
+}
+
+.sdg-goal-number {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #666;
+    margin-bottom: 0.5rem;
+}
+
+.sdg-goal-card.achieved .sdg-goal-number {
+    color: var(--pink-primary);
+}
+
+.sdg-goal-description {
+    font-size: 0.9rem;
+    color: #666;
+}
+
+.sdg-goal-badge {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background: var(--pink-primary);
+    color: white;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+}
+
+/* Podium Styles */
+.podium-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    min-height: 300px;
+    padding: 20px;
+}
+
+.podium {
+    display: flex;
+    align-items: flex-end;
+    gap: 10px;
+}
+
+.podium-block {
+    width: 180px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 10px;
+    border-radius: 8px 8px 0 0;
+    position: relative;
+    transition: transform 0.3s ease;
+    padding-top: 30px;
+}
+
+.podium-block:hover {
+    transform: translateY(-5px);
+}
+
+.podium-block.gold {
+    background: linear-gradient(45deg, #FFD700, #FFC800);
+    height: 200px;
+    order: 2;
+}
+
+.podium-block.silver {
+    background: linear-gradient(45deg, #C0C0C0, #D3D3D3);
+    height: 170px;
+    order: 1;
+}
+
+.podium-block.bronze {
+    background: linear-gradient(45deg, #CD7F32, #DFA878);
+    height: 140px;
+    order: 3;
+}
+
+.podium-rank {
+    position: absolute;
+    top: -20px;
+    background: white;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.gold .podium-rank {
+    color: #FFD700;
+}
+
+.silver .podium-rank {
+    color: #C0C0C0;
+}
+
+.bronze .podium-rank {
+    color: #CD7F32;
+}
+
+.team-name {
+    color: white;
+    font-weight: bold;
+    text-align: center;
+    margin-top: 20px;
+    font-size: 1.1em;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+}
+
+.event-count {
+    color: white;
+    font-size: 0.9em;
+    margin-top: 5px;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+}
+
+/* Trophy Icon Styles */
+.trophy-icon {
+    position: absolute;
+    top: -60px;
+    animation: float 3s ease-in-out infinite;
+}
+
+.trophy-icon i {
+    font-size: 40px;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+}
+
+.gold .trophy-icon i {
+    color: #FFD700;
+    font-size: 50px; /* Larger trophy for first place */
+}
+
+.silver .trophy-icon i {
+    color: #C0C0C0;
+}
+
+.bronze .trophy-icon i {
+    color: #CD7F32;
+}
+
+/* Floating animation */
+@keyframes float {
+    0% {
+        transform: translateY(0px);
+    }
+    50% {
+        transform: translateY(-10px);
+    }
+    100% {
+        transform: translateY(0px);
+    }
+}
+
+/* Add shine effect to trophies */
+.trophy-icon i {
+    position: relative;
+}
+
+.trophy-icon i::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -5px;
+    width: 15px;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.3);
+    transform: skewX(-25deg);
+    animation: shine 3s infinite;
+}
+
+@keyframes shine {
+    0% {
+        left: -100%;
+    }
+    20% {
+        left: 100%;
+    }
+    100% {
+        left: 100%;
+    }
+}
+
+/* Empty podium spot styles */
+.team-name.empty {
+    color: rgba(255, 255, 255, 0.7);
+    font-style: italic;
+}
+
+.podium-block:has(.team-name.empty) {
+    opacity: 0.7;
+}
+
+.podium-block:has(.team-name.empty) .trophy-icon {
+    opacity: 0.5;
+    animation: none;
+}
+
+.podium-block:has(.team-name.empty) .trophy-icon i::after {
+    animation: none;
+}
+
+.podium-block:has(.team-name.empty):hover {
+    transform: none;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .sdg-goals-grid {
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    }
+    
+    .bingo-cell {
+        width: 40px;
+        height: 40px;
+        font-size: 0.9rem;
+    }
+}
+
+/* Bingo free space styling */
+.bingo-cell .free-space {
+    color: var(--pink-primary);
+    font-size: 1.5em;
+    opacity: 0.5;
+}
+
+.bingo-cell:has(.free-space) {
+    background-color: #f8f9fa;
+    border-style: dashed;
+    border-width: 1px;
 }

@@ -3,23 +3,78 @@
 {% block title %}Leaderboard{% endblock %}
 
 {% block content %}
-<h1>Team Leaderboard</h1>
-<table class="table table-striped">
-    <thead>
-        <tr>
-            <th>Rank</th>
-            <th>Team Name</th>
-            <th>Events Count</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for rank, team, event_count in ranked_teams %}
+<div class="container">
+    <h1 class="text-center mb-4 theme-pink">Team Leaderboard</h1>
+
+    <!-- Top 3 Podium Section -->
+    {% set active_teams = ranked_teams|selectattr('2', '>', 0)|list %}
+    <div class="podium-wrapper mb-5">
+        <div class="podium">
+            <!-- Second Place -->
+            <div class="podium-block silver">
+                <div class="trophy-icon">
+                    <i class="fas fa-medal"></i>
+                </div>
+                <div class="podium-rank">2nd</div>
+                {% if active_teams|length >= 2 %}
+                    <div class="team-name">{{ active_teams[1][1].name }}</div>
+                    <div class="event-count">{{ active_teams[1][2] }} events</div>
+                {% else %}
+                    <div class="team-name empty">Unclaimed</div>
+                    <div class="event-count">0 events</div>
+                {% endif %}
+            </div>
+
+            <!-- First Place -->
+            <div class="podium-block gold">
+                <div class="trophy-icon">
+                    <i class="fas fa-trophy"></i>
+                </div>
+                <div class="podium-rank">1st</div>
+                {% if active_teams|length >= 1 %}
+                    <div class="team-name">{{ active_teams[0][1].name }}</div>
+                    <div class="event-count">{{ active_teams[0][2] }} events</div>
+                {% else %}
+                    <div class="team-name empty">Unclaimed</div>
+                    <div class="event-count">0 events</div>
+                {% endif %}
+            </div>
+
+            <!-- Third Place -->
+            <div class="podium-block bronze">
+                <div class="trophy-icon">
+                    <i class="fas fa-award"></i>
+                </div>
+                <div class="podium-rank">3rd</div>
+                {% if active_teams|length >= 3 %}
+                    <div class="team-name">{{ active_teams[2][1].name }}</div>
+                    <div class="event-count">{{ active_teams[2][2] }} events</div>
+                {% else %}
+                    <div class="team-name empty">Unclaimed</div>
+                    <div class="event-count">0 events</div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Leaderboard Table -->
+    <table class="table table-striped">
+        <thead>
             <tr>
-                <td>{{ rank }}</td>
-                <td>{{ team.name }}</td>
-                <td>{{ event_count }}</td>
+                <th>Rank</th>
+                <th>Team Name</th>
+                <th>Events Count</th>
             </tr>
-        {% endfor %}
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+            {% for rank, team, event_count in ranked_teams %}
+                <tr>
+                    <td>{{ rank }}</td>
+                    <td>{{ team.name }}</td>
+                    <td>{{ event_count }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
 {% endblock %}

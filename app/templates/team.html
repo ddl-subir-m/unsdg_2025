@@ -32,25 +32,105 @@
             <div class="mb-4">
                 <h3><i class="fas fa-calendar-alt me-2"></i>Team Events</h3>
                 {% if events %}
-                <div class="list-group">
+                <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
                     {% for event in events %}
-                    <div class="list-group-item">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <h5 class="mb-1">{{ event.title }}</h5>
-                                <small class="text-muted">{{ event.date.strftime('%B %d, %Y') }}</small>
+                    <div class="col">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h5 class="card-title" style="color: #FF69B4;">{{ event.title }}</h5>
+                                <h6 class="card-subtitle mb-2 text-muted">
+                                    <i class="fas fa-users me-1" style="color: #FF69B4;"></i>
+                                    {{ event.team.name }}
+                                </h6>
+                                <p class="card-text">
+                                    <i class="far fa-calendar me-1" style="color: #FF69B4;"></i>
+                                    {% if event.start_date.date() == event.end_date.date() %}
+                                        {{ event.start_date.strftime('%B %d, %Y') }}<br>
+                                        {{ event.start_date.strftime('%I:%M %p') }} - {{ event.end_date.strftime('%I:%M %p') }}
+                                    {% else %}
+                                        {{ event.start_date.strftime('%B %d, %Y %I:%M %p') }} -<br>
+                                        {{ event.end_date.strftime('%B %d, %Y %I:%M %p') }}
+                                    {% endif %}
+                                    <br>
+                                    <small class="text-muted">{{ event.timezone }}</small>
+                                </p>
+                                {% if event.location %}
+                                <p class="card-text">
+                                    <i class="fas fa-map-marker-alt me-1" style="color: #FF69B4;"></i>
+                                    {{ event.location }}
+                                </p>
+                                {% endif %}
+                                {% if event.description %}
+                                <p class="card-text">{{ event.description }}</p>
+                                {% endif %}
+                                {% if event.sdg_goals %}
+                                <div class="mt-2">
+                                    {% for goal in event.sdg_goals.goals %}
+                                    <span class="badge {% if goal == event.sdg_goals.primary %}bg-primary{% else %}bg-secondary{% endif %} me-1">
+                                        SDG {{ goal }}: {{ sdg_descriptions[goal] }}
+                                    </span>
+                                    {% endfor %}
+                                </div>
+                                {% endif %}
                             </div>
-                            <span class="badge bg-primary rounded-pill">{{ event.sdg_goal }}</span>
                         </div>
-                        {% if event.description %}
-                        <p class="mb-1">{{ event.description }}</p>
-                        {% endif %}
                     </div>
                     {% endfor %}
                 </div>
                 {% else %}
                 <p class="text-muted">No events created yet.</p>
                 {% endif %}
+            </div>
+
+            <!-- Bingo Card and SDG Goals Progress Section -->
+            <div class="row mb-4">
+                <!-- Bingo Card Section -->
+                <div class="col-md-6">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h3><i class="fas fa-th me-2"></i>SDG Bingo Card</h3>
+                            {% if bingo_card %}
+                                <div class="bingo-grid">
+                                    {% for row in bingo_card.card_numbers %}
+                                        <div class="bingo-row">
+                                            {% for number in row %}
+                                                <div class="bingo-cell {% if number and number in bingo_card.marked_numbers %}marked{% endif %}">
+                                                    {% if number %}
+                                                        {{ number }}
+                                                    {% endif %}
+                                                </div>
+                                            {% endfor %}
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                <p class="text-muted">No bingo card available.</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SDG Goals Progress Section -->
+                <div class="col-md-6">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h3><i class="fas fa-bullseye me-2"></i>SDG Goals Progress</h3>
+                            <div class="sdg-goals-grid">
+                                {% for goal in all_sdg_goals %}
+                                <div class="sdg-goal-card {% if goal.achieved %}achieved{% endif %}">
+                                    <div class="sdg-goal-number">{{ goal.number }}</div>
+                                    <div class="sdg-goal-description">{{ goal.description }}</div>
+                                    {% if goal.achieved %}
+                                    <div class="sdg-goal-badge">
+                                        <i class="fas fa-check"></i>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

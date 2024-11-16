@@ -4,20 +4,20 @@
 
 {% block content %}
 <div class="container">
-    <h1 class="text-center mb-4" style="color: #FF69B4;">Team Profiles</h1>
+    <h1 class="text-center mb-4 theme-pink">Team Profiles</h1>
     <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
         {% for team, event_count in teams %}
         <div class="col">
             <div class="card h-100">
                 <div class="card-body">
-                    <h5 class="card-title" style="color: #FF69B4;">{{ team.name }}</h5>
+                    <h5 class="card-title theme-pink">{{ team.name }}</h5>
                     <div class="mb-3">
                         <small class="text-muted">
-                            <i class="fas fa-calendar-alt me-1" style="color: #FF69B4;"></i>
+                            <i class="fas fa-calendar-alt me-1 theme-pink"></i>
                             Events: {{ event_count }}
                         </small>
                     </div>
-                    <h6 class="card-subtitle mb-2" style="color: #FF69B4;">Team Members:</h6>
+                    <h6 class="card-subtitle mb-2 theme-pink">Team Members:</h6>
                     <ul class="list-unstyled">
                         {% for member in team.members %}
                         <li class="mb-2">

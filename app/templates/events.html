@@ -42,15 +42,15 @@
                         {% if event.description %}
                         <p class="card-text">{{ event.description }}</p>
                         {% endif %}
+                        {% if event.sdg_goals %}
                         <div class="mt-2">
-                            {% if event.sdg_goals %}
-                                {% for goal in event.sdg_goals.goals %}
-                                <span class="badge {% if goal == event.sdg_goals.primary %}bg-primary{% else %}bg-secondary{% endif %} me-1">
-                                    SDG {{ goal }}: {{ SDG_DESCRIPTIONS[goal] }}
-                                </span>
-                                {% endfor %}
-                            {% endif %}
+                            {% for goal in event.sdg_goals.goals %}
+                            <span class="badge {% if goal == event.sdg_goals.primary %}bg-primary{% else %}bg-secondary{% endif %} me-1">
+                                SDG {{ goal }}: {{ SDG_DESCRIPTIONS[goal] }}
+                            </span>
+                            {% endfor %}
                         </div>
+                        {% endif %}
                     </div>
                 </div>
             </div>
@@ -99,15 +99,15 @@
                         {% if event.description %}
                         <p class="card-text">{{ event.description }}</p>
                         {% endif %}
+                        {% if event.sdg_goals %}
                         <div class="mt-2">
-                            {% if event.sdg_goals %}
-                                {% for goal in event.sdg_goals.goals %}
-                                <span class="badge {% if goal == event.sdg_goals.primary %}bg-primary{% else %}bg-secondary{% endif %} me-1">
-                                    SDG {{ goal }}: {{ SDG_DESCRIPTIONS[goal] }}
-                                </span>
-                                {% endfor %}
-                            {% endif %}
+                            {% for goal in event.sdg_goals.goals %}
+                            <span class="badge {% if goal == event.sdg_goals.primary %}bg-primary{% else %}bg-secondary{% endif %} me-1">
+                                SDG {{ goal }}: {{ SDG_DESCRIPTIONS[goal] }}
+                            </span>
+                            {% endfor %}
                         </div>
+                        {% endif %}
                     </div>
                 </div>
             </div>

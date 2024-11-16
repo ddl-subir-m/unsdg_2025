@@ -2,11 +2,12 @@ from flask import render_template, redirect, url_for, flash, request, jsonify
 from datetime import date, datetime
 from app.main import bp
 from app import db
-from app.models import Team, Event, TeamMember
+from app.models import Team, Event, TeamMember, BingoCard
 from sqlalchemy import func
 from openai import OpenAI
 import json
 import os
+import random
 
 
 client = OpenAI(api_key=os.environ.get('OPENAI_API_KEY'))
@@ -55,6 +56,25 @@ def analyze_sdg_goals(description):
     except Exception as e:
         print(f"Error analyzing SDGs: {e}")
         return {"goals": [], "primary": None}
+
+def update_bingo_card(team_id, sdg_goals):
+    bingo_card = BingoCard.query.filter_by(team_id=team_id).first()
+    if not bingo_card:
+        return
+    
+    # Get the SDG goal numbers from the event
+    new_goals = sdg_goals.get('goals', [])
+    
+    # Update marked numbers
+    marked = set(bingo_card.marked_numbers or [])
+    for goal in new_goals:
+        # Check if this goal exists in the bingo card
+        for row in bingo_card.card_numbers:
+            if goal in row:
+                marked.add(goal)
+    
+    bingo_card.marked_numbers = list(marked)
+    db.session.commit()
 
 @bp.route('/')
 def index():
@@ -150,6 +170,7 @@ def create_event():
                 'id': team.id,
                 'name': team.name
             }
+            update_bingo_card(team.id, sdg_analysis)
             
             return render_template('create_event.html', 
                                  today_date=today_date,
@@ -220,14 +241,30 @@ def leaderboard():
 @bp.route('/team/<int:team_id>')
 def team(team_id):
     team = Team.query.get_or_404(team_id)
-    events_count = Event.query.filter_by(team_id=team_id).count()
-    members_count = TeamMember.query.filter_by(team_id=team_id).count()
-    events = Event.query.filter_by(team_id=team_id).all()
+    events = team.events.order_by(Event.start_date.desc()).all()
+    bingo_card = BingoCard.query.filter_by(team_id=team_id).first()
+    
+    # Collect all unique SDG goals from team's events
+    team_sdg_goals = set()
+    for event in events:
+        if event.sdg_goals and 'goals' in event.sdg_goals:
+            team_sdg_goals.update(event.sdg_goals['goals'])
+    
+    # Create a list of all SDG goals with their status
+    all_sdg_goals = [
+        {
+            'number': i,
+            'description': SDG_DESCRIPTIONS[i],
+            'achieved': i in team_sdg_goals
+        } for i in range(1, 18)
+    ]
+    
     return render_template('team.html', 
                          team=team, 
-                         events=events,
-                         events_count=events_count,
-                         members_count=members_count)
+                         events=events, 
+                         bingo_card=bingo_card,
+                         sdg_descriptions=SDG_DESCRIPTIONS,
+                         all_sdg_goals=all_sdg_goals)
 
 @bp.route('/about')
 def about():
@@ -259,7 +296,7 @@ def create_team():
             team_phrase=data['team_phrase']
         )
         db.session.add(team)
-        db.session.flush()  # Get the team ID
+        db.session.flush()
         
         # Add members
         for i, member_name in enumerate(data['members']):
@@ -270,14 +307,60 @@ def create_team():
                     is_captain=(i == 0)
                 )
                 db.session.add(member)
+
+        # Generate and add bingo card
+        sdg_numbers = list(range(1, 18))  # SDG goals 1-17
+        random.shuffle(sdg_numbers)
+
+        # Create empty 5x3 grid
+        bingo_grid = [[None] * 5 for _ in range(3)]
+
+        # First, fill the diagonal positions
+        diagonal_positions = [(0, 0), (1, 2), (2, 4)]  # Diagonal positions in 3x5 grid
+        diagonal_numbers = sdg_numbers[:3]  # Take first 3 numbers for diagonal
+        for (row, col), number in zip(diagonal_positions, diagonal_numbers):
+            bingo_grid[row][col] = number
+
+        # Remove used numbers from the pool
+        remaining_numbers = sdg_numbers[3:11]  # Take next 8 numbers (we used 3 for diagonal)
+
+        # Ensure each row gets at least one additional number (besides diagonal)
+        for row in range(3):
+            # Find available positions in this row (excluding diagonal)
+            row_positions = [(row, col) for col in range(5) 
+                            if (row, col) not in diagonal_positions]
+            # Pick a random position and number
+            if row_positions:
+                col = random.choice(row_positions)[1]
+                if remaining_numbers:
+                    number = remaining_numbers.pop(0)
+                    bingo_grid[row][col] = number
+
+        # Fill any remaining positions randomly
+        available_positions = [(r, c) for r in range(3) for c in range(5) 
+                              if (r, c) not in diagonal_positions 
+                              and bingo_grid[r][c] is None]
+        random.shuffle(available_positions)
+
+        # Fill remaining positions (up to 2 more)
+        for (row, col), number in zip(available_positions[:2], remaining_numbers):
+            bingo_grid[row][col] = number
+
+        bingo_card = BingoCard(
+            team_id=team.id,
+            card_numbers=bingo_grid,
+            marked_numbers=[]
+        )
+        db.session.add(bingo_card)
         
         db.session.commit()
         
         return jsonify({
             'message': 'Team created successfully',
-            'team_id': team.id
-        }), 201  # Created status code
-        
+            'team_id': team.id,
+            'bingo_card': bingo_grid
+        }), 201
+
     except Exception as e:
         db.session.rollback()
         return jsonify({'message': f'An error occurred: {str(e)}'}), 500
@@ -294,26 +377,23 @@ def team_profiles():
 
 @bp.route('/events')
 def events():
-    # Get current datetime in UTC
-    current_date = datetime.utcnow()
+    # Get current datetime for comparison
+    now = datetime.utcnow()
     
-    # Query upcoming events (events with end_date >= current date)
-    upcoming_events = Event.query\
-        .join(Team)\
-        .filter(Event.end_date >= current_date)\
+    # Query upcoming events (start date is in the future)
+    upcoming_events = Event.query.filter(Event.start_date > now)\
         .order_by(Event.start_date.asc())\
         .all()
     
-    # Query past events (events with end_date < current date)
-    past_events = Event.query\
-        .join(Team)\
-        .filter(Event.end_date < current_date)\
+    # Query past events (end date is in the past)
+    past_events = Event.query.filter(Event.end_date <= now)\
         .order_by(Event.start_date.desc())\
         .all()
     
     return render_template('events.html', 
                          upcoming_events=upcoming_events,
-                         past_events=past_events)
+                         past_events=past_events,
+                         SDG_DESCRIPTIONS=SDG_DESCRIPTIONS)
 
 @bp.route('/api/analyze_sdgs', methods=['POST'])
 def analyze_sdgs():
@@ -334,3 +414,14 @@ def analyze_sdgs():
 @bp.context_processor
 def utility_processor():
     return dict(SDG_DESCRIPTIONS=SDG_DESCRIPTIONS)
+
+@bp.route('/api/team/<int:team_id>/bingo_card')
+def get_team_bingo_card(team_id):
+    bingo_card = BingoCard.query.filter_by(team_id=team_id).first()
+    if not bingo_card:
+        return jsonify({'message': 'Bingo card not found'}), 404
+    
+    return jsonify({
+        'card_numbers': bingo_card.card_numbers,
+        'marked_numbers': bingo_card.marked_numbers
+    })

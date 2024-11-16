@@ -16,6 +16,7 @@ class Team(db.Model):
     name = db.Column(db.String(64), nullable=False)
     members = db.relationship('TeamMember', backref='team', lazy='dynamic')
     events = db.relationship('Event', backref='team', lazy='dynamic')
+    bingo_card = db.relationship('BingoCard', backref='team', uselist=False)
 
 class JSONType(TypeDecorator):
     impl = Text
@@ -51,3 +52,10 @@ class TeamMember(db.Model):
     __table_args__ = (
         db.UniqueConstraint('team_id', 'name', name='unique_member_per_team'),
     )
+
+class BingoCard(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    team_id = db.Column(db.Integer, db.ForeignKey('team.id'), nullable=False)
+    card_numbers = db.Column(JSONType, nullable=False)  # 5x3 grid of SDG numbers
+    marked_numbers = db.Column(JSONType, default=list)  # List of marked SDG numbers
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
