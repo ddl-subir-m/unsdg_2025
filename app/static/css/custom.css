@@ -562,3 +562,435 @@ h1, .world-helper-title {
     border-style: dashed;
     border-width: 1px;
 }
+
+/* Sponsor logo styles */
+.sponsor-logo {
+    max-height: 100px;
+    width: auto;
+    transition: transform 0.3s ease;
+    filter: grayscale(20%);
+}
+
+.sponsor-logo:hover {
+    transform: scale(1.05);
+    filter: grayscale(0%);
+}
+
+/* Sample bingo card styles for homepage */
+.bingo-example .bingo-grid {
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+.bingo-example .bingo-row {
+    display: flex;
+    gap: 5px;
+    margin-bottom: 5px;
+}
+
+.bingo-example .bingo-cell {
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    font-weight: bold;
+    background: #f8f9fa;
+    transition: all 0.3s ease;
+}
+
+.bingo-example .bingo-cell.marked {
+    background: var(--pink-light);
+    border-color: var(--pink-primary);
+    color: var(--pink-primary);
+}
+
+/* Accordion styles */
+.accordion-button:not(.collapsed) {
+    color: var(--pink-primary);
+    background-color: var(--pink-light);
+    box-shadow: inset 0 -1px 0 var(--pink-border);
+}
+
+.accordion-button:focus {
+    border-color: var(--pink-secondary);
+    box-shadow: 0 0 0 0.25rem rgba(255, 105, 180, 0.25);
+}
+
+.accordion-button:not(.collapsed)::after {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23ff69b4'%3e%3cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e");
+}
+
+.accordion-button::after {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23ff69b4'%3e%3cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e");
+}
+
+/* Updated styles for more prominent sections */
+
+/* Accordion styles */
+.accordion-item {
+    border: 2px solid var(--pink-border);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.accordion-button {
+    font-size: 1.5rem;
+    font-weight: bold;
+    padding: 1.5rem;
+    background: linear-gradient(45deg, var(--pink-light), white);
+    justify-content: center;
+    color: var(--pink-primary) !important;
+}
+
+.accordion-button::after {
+    position: absolute;
+    right: 1.5rem;
+}
+
+.accordion-button:not(.collapsed) {
+    color: var(--pink-primary) !important;
+    background: linear-gradient(45deg, var(--pink-light), white);
+    box-shadow: inset 0 -1px 0 var(--pink-border);
+}
+
+.accordion-body {
+    padding: 2rem;
+    background-color: white;
+}
+
+/* Bingo card styles */
+.bingo-example {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border: 2px solid var(--pink-border);
+}
+
+.bingo-cell {
+    width: 60px;
+    height: 60px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.bingo-cell.marked {
+    background: var(--pink-light);
+    border-color: var(--pink-primary);
+    color: var(--pink-primary);
+    transform: scale(1.05);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* List group styles */
+.list-group-item {
+    padding: 1rem 1.25rem;
+    border-left: 4px solid var(--pink-primary);
+    margin-bottom: 0.5rem;
+    border-radius: 8px !important;
+    transition: all 0.3s ease;
+}
+
+.list-group-item:hover {
+    transform: translateX(5px);
+    background-color: var(--pink-light);
+}
+
+/* Sponsors section */
+.card {
+    border: 2px solid var(--pink-border);
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.card-body {
+    padding: 2rem;
+}
+
+.sponsor-logo {
+    max-height: 120px;
+    width: auto;
+    transition: transform 0.3s ease, filter 0.3s ease;
+    filter: grayscale(20%);
+    padding: 1rem;
+}
+
+.sponsor-logo:hover {
+    transform: scale(1.1);
+    filter: grayscale(0%);
+}
+
+/* Section headers */
+h2.theme-pink {
+    font-size: 2rem;
+    font-weight: bold;
+    margin-bottom: 1.5rem;
+}
+
+/* Icons */
+.fas {
+    color: var(--pink-primary);
+}
+
+/* Add some spacing between sections */
+.mb-5 {
+    margin-bottom: 3rem !important;
+}
+
+/* Responsive container adjustments */
+@media (max-width: 768px) {
+    .container {
+        padding: 10px;
+    }
+    
+    /* Adjust heading sizes */
+    h1 {
+        font-size: 1.8rem;
+    }
+    
+    h2 {
+        font-size: 1.5rem;
+    }
+    
+    /* Adjust button sizes */
+    .btn {
+        padding: 0.375rem 0.75rem;
+        font-size: 0.9rem;
+    }
+}
+
+/* Handle very small screens */
+@media (max-width: 576px) {
+    /* Stack sponsor logos */
+    .sponsor-logo {
+        max-height: 80px;
+        margin-bottom: 1rem;
+    }
+    
+    /* Adjust card padding */
+    .card-body {
+        padding: 1rem;
+    }
+    
+    /* Make badges wrap better */
+    .badge {
+        margin-bottom: 0.25rem;
+        display: inline-block;
+    }
+}
+
+/* Responsive bingo card */
+@media (max-width: 768px) {
+    .bingo-cell {
+        width: 45px;
+        height: 45px;
+        font-size: 0.9rem;
+    }
+    
+    .bingo-example .bingo-cell {
+        width: 35px;
+        height: 35px;
+        font-size: 0.8rem;
+    }
+    
+    .bingo-grid {
+        gap: 5px;
+    }
+}
+
+@media (max-width: 576px) {
+    .bingo-cell {
+        width: 35px;
+        height: 35px;
+        font-size: 0.8rem;
+    }
+    
+    .bingo-example .bingo-cell {
+        width: 30px;
+        height: 30px;
+        font-size: 0.7rem;
+    }
+}
+
+/* Responsive podium */
+@media (max-width: 768px) {
+    .podium-wrapper {
+        min-height: 200px;
+    }
+    
+    .podium-block {
+        width: 120px;
+        padding-top: 20px;
+    }
+    
+    .podium-block.gold {
+        height: 150px;
+    }
+    
+    .podium-block.silver {
+        height: 120px;
+    }
+    
+    .podium-block.bronze {
+        height: 100px;
+    }
+    
+    .team-name {
+        font-size: 0.9em;
+    }
+    
+    .event-count {
+        font-size: 0.8em;
+    }
+    
+    .trophy-icon i {
+        font-size: 40px;
+    }
+    
+    .gold .trophy-icon i {
+        font-size: 50px;
+    }
+}
+
+/* Responsive forms */
+@media (max-width: 768px) {
+    .form-group {
+        margin-bottom: 0.75rem;
+    }
+    
+    /* Stack date/time inputs */
+    .date-time-inputs .col-md-4 {
+        margin-bottom: 0.5rem;
+    }
+    
+    /* Adjust input padding */
+    .form-control {
+        padding: 0.375rem 0.5rem;
+    }
+    
+    /* Make textareas smaller on mobile */
+    textarea.form-control {
+        min-height: 100px;
+    }
+}
+
+/* Responsive navigation */
+@media (max-width: 992px) {
+    .navbar-brand {
+        font-size: 1.2rem;
+    }
+    
+    .nav-link {
+        padding: 0.5rem 0.75rem;
+    }
+    
+    .navbar-nav {
+        padding: 0.5rem 0;
+    }
+    
+    .navbar-collapse {
+        background-color: var(--pink-secondary);
+        padding: 0.5rem;
+        border-radius: 0.25rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .container {
+        padding: 10px;
+    }
+}
+
+@media (max-width: 768px) {
+    h1 {
+        font-size: 1.8rem;
+    }
+    h2 {
+        font-size: 1.5rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .card {
+        margin-bottom: 1rem;
+    }
+    
+    .card-body {
+        padding: 1rem;
+    }
+    
+    /* Adjust team profiles grid */
+    .row-cols-1 {
+        margin: 0 -5px;
+    }
+    
+    .col {
+        padding: 0 5px;
+    }
+}
+
+@media (max-width: 768px) {
+    .form-label {
+        font-size: 0.9rem;
+    }
+    
+    .input-group {
+        flex-direction: column;
+    }
+    
+    .input-group > * {
+        width: 100%;
+        margin-bottom: 0.5rem;
+    }
+    
+    .input-group-text {
+        border-radius: 4px;
+    }
+    
+    /* Adjust time inputs */
+    .col-md-4 {
+        margin-bottom: 1rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .navbar-brand {
+        font-size: 1.2rem;
+    }
+    
+    .nav-link {
+        padding: 0.5rem 1rem;
+    }
+    
+    .navbar-nav {
+        padding: 0.5rem 0;
+    }
+    
+    .nav-item:hover {
+        border-radius: 0;
+    }
+}
+
+@media (max-width: 768px) {
+    .table-responsive {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    .table th, 
+    .table td {
+        min-width: 100px;
+        font-size: 0.9rem;
+    }
+}
+
+.sponsors-card {
+    border: none;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
