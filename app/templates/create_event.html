@@ -53,9 +53,9 @@
                     <!-- Existing Team Tab -->
                     <div class="tab-pane fade show active" id="existing-team" role="tabpanel">
                         <div class="mb-3">
-                            <label for="team_search" class="form-label">Search for your team</label>
+                            <label for="team_search" class="form-label">Find and select your team</label>
                             <input type="text" class="form-control" id="team_search" 
-                                   placeholder="Enter team name or member name">
+                                   placeholder="Enter team or member name and click matching team">
                             <div id="team_search_results" class="mt-2 list-group">
                                 <!-- Search results populated by JavaScript -->
                             </div>
@@ -99,7 +99,11 @@
                                     </button>
                                     <div class="mt-2">
                                         <div class="alert alert-phrase d-flex align-items-center justify-content-between" id="phrase_preview">
-                                            <span id="phrase_text">Click the button to generate your team phrase</span>
+                                            <span id="phrase_text">
+                                                Click the button to generate your team phrase
+                                                <br>
+                                                <i class="fas fa-exclamation-triangle text-warning"></i> Copy and save this immediately. You'll need it to delete events and this is your only chance to see it. 
+                                            </span>
                                             <button class="btn btn-sm btn-outline-pink ms-2" id="copy_phrase_btn" style="display: none;">
                                                 <i class="fas fa-copy"></i> Copy
                                             </button>
