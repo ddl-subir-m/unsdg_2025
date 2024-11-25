@@ -24,28 +24,28 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('main.index') }}">Home</a>
+                        <a class="nav-link {{ 'active' if request.endpoint == 'main.index' }}" href="{{ url_for('main.index') }}">Home</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('main.create_event') }}">Create Event</a>
+                        <a class="nav-link {{ 'active' if request.endpoint == 'main.create_event' }}" href="{{ url_for('main.create_event') }}">Create Event</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('main.events') }}">Events</a>
+                        <a class="nav-link {{ 'active' if request.endpoint == 'main.events' }}" href="{{ url_for('main.events') }}">Events</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('main.team_profiles') }}">Team Profiles</a>
+                        <a class="nav-link {{ 'active' if request.endpoint == 'main.team_profiles' }}" href="{{ url_for('main.team_profiles') }}">Team Profiles</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('main.leaderboard') }}">Leaderboard</a>
+                        <a class="nav-link {{ 'active' if request.endpoint == 'main.leaderboard' }}" href="{{ url_for('main.leaderboard') }}">Leaderboard</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('main.learn_unsdg') }}">Learn About UNSDG</a>
+                        <a class="nav-link {{ 'active' if request.endpoint == 'main.learn_unsdg' }}" href="{{ url_for('main.learn_unsdg') }}">Learn About UNSDG</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('main.about') }}">About Us</a>
+                        <a class="nav-link {{ 'active' if request.endpoint == 'main.about' }}" href="{{ url_for('main.about') }}">About Us</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('main.sponsors') }}">Our Sponsors</a>
+                        <a class="nav-link {{ 'active' if request.endpoint == 'main.sponsors' }}" href="{{ url_for('main.sponsors') }}">Our Sponsors</a>
                     </li>
                 </ul>
             </div>
