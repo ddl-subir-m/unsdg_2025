@@ -4,7 +4,7 @@
 
 {% block content %}
 <div class="container">
-    <h1 class="text-center mb-4 theme-pink">Team Leaderboard</h1>
+    <h1 class="text-center mb-4 theme-pink">Leaderboard</h1>
 
     <!-- Top 3 Podium Section -->
     {% set active_teams = ranked_teams|selectattr('2', '>', 0)|list %}

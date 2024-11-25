@@ -484,3 +484,77 @@ def delete_event(event_id):
     except Exception as e:
         db.session.rollback()
         return jsonify({'message': f'An error occurred: {str(e)}'}), 500
+
+@bp.route('/learn-unsdg')
+def learn_unsdg():
+    sdg_details = {
+        1: {
+            "title": "No Poverty",
+            "description": "End poverty in all its forms everywhere. This goal aims to ensure that all people, particularly the poor and vulnerable, have equal rights to economic resources, access to basic services, and social protection systems."
+        },
+        2: {
+            "title": "Zero Hunger",
+            "description": "End hunger, achieve food security and improved nutrition, and promote sustainable agriculture. This includes ensuring sustainable food production systems and implementing resilient agricultural practices."
+        },
+        3: {
+            "title": "Good Health and Well-being",
+            "description": "Ensure healthy lives and promote well-being for all at all ages. This encompasses reducing maternal mortality, ending preventable deaths of newborns and children, and combating communicable diseases."
+        },
+        4: {
+            "title": "Quality Education",
+            "description": "Ensure inclusive and equitable quality education and promote lifelong learning opportunities for all. This includes ensuring that all girls and boys complete free, equitable, and quality primary and secondary education."
+        },
+        5: {
+            "title": "Gender Equality",
+            "description": "Achieve gender equality and empower all women and girls. This involves eliminating all forms of discrimination, violence, and harmful practices against women and girls everywhere."
+        },
+        6: {
+            "title": "Clean Water and Sanitation",
+            "description": "Ensure availability and sustainable management of water and sanitation for all. This includes achieving universal and equitable access to safe and affordable drinking water."
+        },
+        7: {
+            "title": "Affordable and Clean Energy",
+            "description": "Ensure access to affordable, reliable, sustainable, and modern energy for all. This involves increasing the share of renewable energy and improving energy efficiency."
+        },
+        8: {
+            "title": "Decent Work and Economic Growth",
+            "description": "Promote sustained, inclusive, and sustainable economic growth, full and productive employment, and decent work for all."
+        },
+        9: {
+            "title": "Industry, Innovation and Infrastructure",
+            "description": "Build resilient infrastructure, promote inclusive and sustainable industrialization, and foster innovation. This includes developing quality, reliable, sustainable, and resilient infrastructure."
+        },
+        10: {
+            "title": "Reduced Inequalities",
+            "description": "Reduce inequality within and among countries. This involves promoting social, economic, and political inclusion of all, irrespective of age, sex, disability, race, ethnicity, origin, religion, or economic status."
+        },
+        11: {
+            "title": "Sustainable Cities and Communities",
+            "description": "Make cities and human settlements inclusive, safe, resilient, and sustainable. This includes ensuring access to safe and affordable housing and basic services."
+        },
+        12: {
+            "title": "Responsible Consumption and Production",
+            "description": "Ensure sustainable consumption and production patterns. This involves sustainable management and efficient use of natural resources."
+        },
+        13: {
+            "title": "Climate Action",
+            "description": "Take urgent action to combat climate change and its impacts. This includes strengthening resilience and adaptive capacity to climate-related hazards and natural disasters."
+        },
+        14: {
+            "title": "Life Below Water",
+            "description": "Conserve and sustainably use the oceans, seas, and marine resources for sustainable development. This involves reducing marine pollution and protecting marine ecosystems."
+        },
+        15: {
+            "title": "Life on Land",
+            "description": "Protect, restore, and promote sustainable use of terrestrial ecosystems, sustainably manage forests, combat desertification, halt and reverse land degradation, and halt biodiversity loss."
+        },
+        16: {
+            "title": "Peace, Justice and Strong Institutions",
+            "description": "Promote peaceful and inclusive societies for sustainable development, provide access to justice for all, and build effective, accountable, and inclusive institutions at all levels."
+        },
+        17: {
+            "title": "Partnerships for the Goals",
+            "description": "Strengthen the means of implementation and revitalize the global partnership for sustainable development. This involves enhancing cooperation between governments, the private sector, and civil society."
+        }
+    }
+    return render_template('learn_unsdg.html', sdg_details=sdg_details)
