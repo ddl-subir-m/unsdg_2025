@@ -19,13 +19,15 @@
                         <div class="sdg-grid">
                             {% for number, details in sdg_details.items() %}
                             <div class="sdg-card">
-                                <div class="sdg-card-header">
-                                    <div class="sdg-number">{{ number }}</div>
-                                    <h3 class="goal-title">{{ details.title }}</h3>
-                                </div>
-                                <div class="sdg-card-body">
-                                    <p>{{ details.description }}</p>
-                                </div>
+                                <a href="https://sdgs.un.org/goals/goal{{ number }}" target="_blank" class="sdg-card-link">
+                                    <div class="sdg-card-header">
+                                        <div class="sdg-number">{{ number }}</div>
+                                        <h3 class="goal-title">{{ details.title }}</h3>
+                                    </div>
+                                    <div class="sdg-card-body">
+                                        <p>{{ details.description }}</p>
+                                    </div>
+                                </a>
                             </div>
                             {% endfor %}
                         </div>

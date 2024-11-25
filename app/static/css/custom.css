@@ -1101,7 +1101,7 @@ h2.theme-pink {
 .hero-section {
     background: linear-gradient(45deg, rgba(255,105,180,0.1), rgba(255,182,193,0.1));
     border-radius: 15px;
-    padding: 2.5rem 1rem;
+    padding: 2rem 1rem;
     margin-bottom: 2rem;
 }
 
@@ -1134,8 +1134,29 @@ h2.theme-pink {
 .hero-section {
     background: linear-gradient(45deg, rgba(255,105,180,0.1), rgba(255,182,193,0.1));
     border-radius: 15px;
-    padding: 2.5rem 1rem;
+    padding: 2rem 1rem;
     margin-bottom: 2rem;
+}
+
+@media (max-width: 768px) {
+    .hero-section {
+        padding: 1.5rem 0.75rem;
+    }
+
+    .hero-section .display-4 {
+        font-size: 1.8rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .hero-section .lead {
+        font-size: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .hero-section .btn-lg {
+        padding: 0.5rem 1rem;
+        font-size: 0.9rem;
+    }
 }
 
 /* Card Improvements */
@@ -1352,5 +1373,35 @@ h2.theme-pink {
         transform: none;
         width: 100%;
     }
+}
+
+/* SDG Card Link Styles */
+.sdg-card-link {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+    height: 100%;
+}
+
+.sdg-card-link:hover {
+    text-decoration: none;
+    color: inherit;
+}
+
+.sdg-card {
+    cursor: pointer;
+}
+
+.sdg-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+}
+
+.sdg-card:hover .goal-title {
+    color: var(--pink-hover);
+}
+
+.sdg-card:hover .sdg-number {
+    background-color: var(--pink-hover);
 }
 
