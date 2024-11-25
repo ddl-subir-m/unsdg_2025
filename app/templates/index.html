@@ -4,94 +4,73 @@
 
 {% block content %}
 <div class="container">
-    <!-- Notifications Section -->
-    <div class="card mb-4 notification-card">
-        <div class="card-header bg-pink text-white">
-            <h5 class="mb-0">
-                <i class="fas fa-bullhorn me-2"></i>Announcements
-            </h5>
-        </div>
-        <div class="card-body">
-            {% if notifications %}
-                {% for notification in notifications %}
-                    <div class="notification-item mb-2">
-                        <p class="mb-1">{{ notification.message|safe }}</p>
-                        <small class="text-muted">Posted {{ notification.created_at.strftime('%B %d, %Y') }}</small>
-                    </div>
-                    {% if not loop.last %}
-                        <hr class="my-3">
-                    {% endif %}
-                {% endfor %}
-            {% else %}
-                <div class="text-center text-muted">
-                    <i class="fas fa-comment-slash fa-2x mb-2"></i>
-                    <p>No notifications at the moment. Check back soon for updates!</p>
-                </div>
-            {% endif %}
-        </div>
-    </div>
-
     <!-- Hero Section -->
-    <div class="text-center mb-5">
-        <p class="lead">Learn about the UN Sustainable Development Goals (UNSDG) and organize events that support the UNSDG!</p>
-        <div class="embed-responsive embed-responsive-16by9 mb-4">
-            <iframe class="embed-responsive-item" src="https://www.youtube.com/embed/0XTBYMfZyrM" allowfullscreen></iframe>
+    <div class="hero-section mb-4">
+        <div class="text-center">
+            <h1 class="display-4 mb-3 theme-pink">Make a Difference with UN SDG Goals</h1>
+            <p class="lead mb-4">Learn about the UN Sustainable Development Goals (UNSDG) and organize events that support global sustainability!</p>
+            <div class="d-flex justify-content-center gap-3 mb-4">
+                <a href="{{ url_for('main.create_event') }}" class="btn btn-pink btn-lg">
+                    <i class="fas fa-plus-circle me-2"></i>Create an Event
+                </a>
+                <a href="{{ url_for('main.learn_unsdg') }}" class="btn btn-pink btn-lg">
+                    <i class="fas fa-book-open me-2"></i>Learn About SDGs
+                </a>
+            </div>
         </div>
-        <a href="{{ url_for('main.create_event') }}" class="btn btn-primary">Create an Event</a>
     </div>
 
-    <!-- Bingo Game Section (Collapsible) -->
-    <div class="accordion mb-5" id="bingoAccordion">
-        <div class="accordion-item">
-            <h2 class="accordion-header" id="bingoHeader">
-                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#bingoCollapse" aria-expanded="false" aria-controls="bingoCollapse">
-                    <i class="fas fa-gift me-2"></i>Win Prizes with SDG Bingo!
-                </button>
-            </h2>
-            <div id="bingoCollapse" class="accordion-collapse collapse" aria-labelledby="bingoHeader">
-                <div class="accordion-body">
-                    <!-- Top Row with How to Play and Win Prizes -->
-                    <div class="row mb-4">
-                        <!-- How to Play Column -->
-                        <div class="col-md-4">
-                            <div class="card h-100">
-                                <div class="card-body">
-                                    <h4 class="mb-3">How to Play:</h4>
-                                    <ol class="list-group list-group-numbered mb-4">
+    <!-- Bingo Game Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-pink text-white" 
+                     role="button" 
+                     data-bs-toggle="collapse" 
+                     data-bs-target="#bingoPrizes" 
+                     aria-expanded="false" 
+                     aria-controls="bingoPrizes">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">
+                            <i class="fas fa-gift me-2"></i>Win Prizes with SDG Bingo!
+                        </h5>
+                        <i class="fas fa-chevron-down transition-icon"></i>
+                    </div>
+                </div>
+                <div class="collapse" id="bingoPrizes">
+                    <div class="card-body">
+                        <div class="row">
+                            <!-- Bingo Card Preview -->
+                            <div class="col-md-4 mb-4 mb-md-0">
+                                <h5 class="mb-3">Sample Bingo Card</h5>
+                                <div class="bingo-grid sample-card mx-auto">
+                                    <!-- 4x4 grid populated by JavaScript -->
+                                </div>
+                                <div class="text-center mt-3">
+                                    <a href="{{ url_for('main.create_team') }}" class="btn btn-outline-pink">
+                                        <i class="fas fa-users me-2"></i>Create Team to Play
+                                    </a>
+                                </div>
+                            </div>
+
+                            <!-- How to Play -->
+                            <div class="col-md-4 mb-4 mb-md-0">
+                                <div class="info-card h-100">
+                                    <h5 class="mb-3">How to Play:</h5>
+                                    <ol class="list-group list-group-numbered">
                                         <li class="list-group-item">Create a team to get your unique bingo card</li>
                                         <li class="list-group-item">Organize events that align with UN SDG goals</li>
-                                        <li class="list-group-item">Numbers on your card are automatically marked when your events match SDG goals</li>
+                                        <li class="list-group-item">Numbers are marked when events match SDG goals</li>
+                                        <li class="list-group-item">Complete patterns to win prizes!</li>
                                     </ol>
                                 </div>
                             </div>
-                        </div>
 
-                        <!-- Win Patterns Column -->
-                        <div class="col-md-4">
-                            <div class="card h-100">
-                                <div class="card-body">
-                                    <h4 class="mb-3">BINGO Win Patterns:</h4>
-                                    <ul class="list-group mb-4">
-                                        <li class="list-group-item">
-                                            <i class="fas fa-arrows-alt-h text-pink me-2"></i>Any horizontal row
-                                        </li>
-                                        <li class="list-group-item">
-                                            <i class="fas fa-arrows-alt-v text-pink me-2"></i>Any vertical column
-                                        </li>
-                                        <li class="list-group-item">
-                                            <i class="fas fa-grip-horizontal text-pink me-2"></i>Full card
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Prize Categories Column (New) -->
-                        <div class="col-md-4">
-                            <div class="card h-100">
-                                <div class="card-body">
-                                    <h4 class="mb-3">Prize Categories:</h4>
-                                    <ul class="list-group mb-4">
+                            <!-- Prize Categories -->
+                            <div class="col-md-4">
+                                <div class="info-card h-100">
+                                    <h5 class="mb-3">Prize Categories:</h5>
+                                    <ul class="list-group">
                                         <li class="list-group-item">
                                             <i class="fas fa-gift text-pink me-2"></i>
                                             <strong>Ongoing Prizes:</strong>
@@ -112,44 +91,89 @@
                             </div>
                         </div>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-                    <!-- Bottom Row with Sample Bingo Card -->
-                    <div class="row">
-                        <div class="col-12">
-                            <div class="card">
-                                <div class="card-body">
-                                    <h4 class="mb-3 text-center fs-5">Win Prizes with SDG Bingo:</h4>
-                                    <div class="bingo-grid sample-card mx-auto">
-                                        <!-- 4x4 grid will be populated by JavaScript -->
-                                    </div>
-                                </div>
+    <!-- Main Content Grid -->
+    <div class="row">
+        <!-- Left Column: Notifications -->
+        <div class="col-md-8 mb-4">
+            <div class="card h-100">
+                <div class="card-header bg-pink text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-bullhorn me-2"></i>Announcements
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if notifications %}
+                        {% for notification in notifications %}
+                            <div class="notification-item mb-2">
+                                <p class="mb-1">{{ notification.message|safe }}</p>
+                                <small class="text-muted">Posted {{ notification.created_at.strftime('%B %d, %Y') }}</small>
                             </div>
+                            {% if not loop.last %}
+                                <hr class="my-3">
+                            {% endif %}
+                        {% endfor %}
+                    {% else %}
+                        <div class="text-center text-muted">
+                            <i class="fas fa-comment-slash fa-2x mb-2"></i>
+                            <p>No notifications at the moment.</p>
                         </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Column: Team Video -->
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                <div class="card-header bg-pink text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-video me-2"></i>What is WorldHelper?
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="video-container">
+                        <!-- Replace this URL with your actual video when ready -->
+                        <iframe 
+                            src="https://www.youtube.com/embed/dQw4w9WgXcQ"
+                            title="Team Introduction"
+                            frameborder="0"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowfullscreen>
+                        </iframe>
+                    </div>
+                    <div class="text-center mt-3">
+                        <small class="text-muted">
+                            <i class="fas fa-info-circle me-1"></i>
+                            Watch our team introduce the WorldHelper project
+                        </small>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Sponsors Section (Always Visible) -->
-    <div class="card sponsors-card">
-        <div class="card-body">
-            <h2 class="text-center theme-pink mb-4">
-                <i class="fas fa-handshake me-2"></i>Our Sponsors
-            </h2>
-            <div class="row justify-content-center align-items-center g-4">
-                <div class="col-6 col-md-3 text-center">
-                    <img src="https://placehold.co/200x100/ff69b4/ffffff?text=EcoTech" alt="EcoTech" class="img-fluid sponsor-logo">
-                </div>
-                <div class="col-6 col-md-3 text-center">
-                    <img src="https://placehold.co/200x100/4CAF50/ffffff?text=SolarFlow" alt="SolarFlow" class="img-fluid sponsor-logo">
-                </div>
-                <div class="col-6 col-md-3 text-center">
-                    <img src="https://placehold.co/200x100/2196F3/ffffff?text=GreenLife" alt="GreenLife" class="img-fluid sponsor-logo">
-                </div>
-                <div class="col-6 col-md-3 text-center">
-                    <img src="https://placehold.co/200x100/9C27B0/ffffff?text=EcoCircle" alt="EcoCircle" class="img-fluid sponsor-logo">
-                </div>
+    <!-- Sponsors Section -->
+    <div class="sponsors-section mt-2">
+        <h2 class="text-center theme-pink mb-4">
+            <i class="fas fa-handshake me-2"></i>Our Sponsors
+        </h2>
+        <div class="row justify-content-center align-items-center g-4">
+            <div class="col-6 col-md-3">
+                <img src="https://placehold.co/200x100/ff69b4/ffffff?text=EcoTech" alt="EcoTech" class="img-fluid sponsor-logo">
+            </div>
+            <div class="col-6 col-md-3">
+                <img src="https://placehold.co/200x100/4CAF50/ffffff?text=SolarFlow" alt="SolarFlow" class="img-fluid sponsor-logo">
+            </div>
+            <div class="col-6 col-md-3">
+                <img src="https://placehold.co/200x100/2196F3/ffffff?text=GreenLife" alt="GreenLife" class="img-fluid sponsor-logo">
+            </div>
+            <div class="col-6 col-md-3">
+                <img src="https://placehold.co/200x100/9C27B0/ffffff?text=EcoCircle" alt="EcoCircle" class="img-fluid sponsor-logo">
             </div>
         </div>
     </div>

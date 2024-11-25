@@ -1098,3 +1098,198 @@ h2.theme-pink {
     background-color: var(--pink-primary) !important;
 }
 
+.hero-section {
+    background: linear-gradient(45deg, rgba(255,105,180,0.1), rgba(255,182,193,0.1));
+    border-radius: 15px;
+    padding: 2.5rem 1rem;
+    margin-bottom: 2rem;
+}
+
+.hero-section .embed-responsive {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.info-card {
+    background: white;
+    border: 1px solid var(--pink-border);
+    border-radius: 8px;
+    padding: 1.5rem;
+    height: 100%;
+    transition: transform 0.3s ease;
+}
+
+.info-card:hover {
+    transform: translateY(-5px);
+}
+
+.sponsors-section {
+    background: white;
+    border-radius: 10px;
+    padding: 2rem;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+/* Hero Section Improvements */
+.hero-section {
+    background: linear-gradient(45deg, rgba(255,105,180,0.1), rgba(255,182,193,0.1));
+    border-radius: 15px;
+    padding: 2.5rem 1rem;
+    margin-bottom: 2rem;
+}
+
+/* Card Improvements */
+.card {
+    border: none;
+    box-shadow: 0 2px 15px rgba(0,0,0,0.08);
+    transition: transform 0.2s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+
+.card-header {
+    border-bottom: none;
+    background: linear-gradient(45deg, var(--pink-primary), #ff9ecd);
+}
+
+/* Quick Links */
+.btn-outline-pink {
+    border-color: var(--pink-primary);
+    color: var(--pink-primary);
+    transition: all 0.3s ease;
+}
+
+.btn-outline-pink:hover {
+    background-color: var(--pink-primary);
+    color: white;
+    transform: translateY(-2px);
+}
+
+/* Notification Items */
+.notification-item {
+    padding: 0.75rem;
+    border-radius: 8px;
+    background: rgba(255,105,180,0.05);
+    margin-bottom: 1rem;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .hero-section {
+        padding: 1.5rem 1rem;
+    }
+    
+    .card {
+        margin-bottom: 1rem;
+    }
+    
+    .card:hover {
+        transform: none;
+    }
+}
+
+/* Info Cards */
+.info-card {
+    background: white;
+    border: 1px solid rgba(255,105,180,0.2);
+    border-radius: 8px;
+    padding: 1.5rem;
+    height: 100%;
+}
+
+.info-card .list-group-item {
+    border-color: rgba(255,105,180,0.2);
+    padding: 0.75rem 1rem;
+}
+
+.info-card .list-group-item i {
+    width: 20px;
+    text-align: center;
+}
+
+/* Bingo Grid Improvements */
+.bingo-grid {
+    max-width: 280px;
+    margin: 0 auto;
+    background: white;
+    padding: 10px;
+    border-radius: 8px;
+    box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+}
+
+.bingo-cell {
+    background: rgba(255,105,180,0.1);
+    border: 2px solid white;
+    transition: all 0.3s ease;
+}
+
+.bingo-cell.marked {
+    background: var(--pink-primary);
+    color: white;
+}
+
+/* Responsive adjustments for bingo section */
+@media (max-width: 768px) {
+    .info-card {
+        margin-bottom: 1rem;
+    }
+    
+    .bingo-grid {
+        max-width: 240px;
+    }
+}
+
+/* Collapsible section styles */
+.card-header[role="button"] {
+    cursor: pointer;
+    user-select: none;
+}
+
+.card-header[role="button"]:hover {
+    background: linear-gradient(45deg, var(--pink-primary), #ff8eb4);
+}
+
+.transition-icon {
+    transition: transform 0.3s ease;
+}
+
+.collapse:not(.show) + .card-header .transition-icon,
+.collapsed .transition-icon {
+    transform: rotate(-90deg);
+}
+
+.collapse.show + .card-header .transition-icon {
+    transform: rotate(0deg);
+}
+
+/* Add smooth transition for collapse */
+.collapse {
+    transition: all 0.3s ease;
+}
+
+/* Improve hover feedback */
+.card-header[role="button"]:active {
+    transform: translateY(1px);
+}
+
+/* Pink button styles */
+.btn-pink {
+    background-color: var(--pink-primary);
+    border-color: var(--pink-primary);
+    color: white;
+}
+
+.btn-pink:hover {
+    background-color: #ff4da6;
+    border-color: #ff4da6;
+    color: white;
+    transform: translateY(-2px);
+}
+
+.btn-pink:active {
+    background-color: #ff1a8c !important;
+    border-color: #ff1a8c !important;
+}
+
