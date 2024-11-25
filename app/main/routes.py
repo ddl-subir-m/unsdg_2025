@@ -313,39 +313,16 @@ def create_team():
         sdg_numbers = list(range(1, 18))  # SDG goals 1-17
         random.shuffle(sdg_numbers)
 
-        # Create empty 5x3 grid
-        bingo_grid = [[None] * 5 for _ in range(3)]
+        # Create empty 4x4 grid
+        bingo_grid = [[None] * 4 for _ in range(4)]
 
-        # First, fill the diagonal positions
-        diagonal_positions = [(0, 0), (1, 2), (2, 4)]  # Diagonal positions in 3x5 grid
-        diagonal_numbers = sdg_numbers[:3]  # Take first 3 numbers for diagonal
-        for (row, col), number in zip(diagonal_positions, diagonal_numbers):
-            bingo_grid[row][col] = number
-
-        # Remove used numbers from the pool
-        remaining_numbers = sdg_numbers[3:11]  # Take next 8 numbers (we used 3 for diagonal)
-
-        # Ensure each row gets at least one additional number (besides diagonal)
-        for row in range(3):
-            # Find available positions in this row (excluding diagonal)
-            row_positions = [(row, col) for col in range(5) 
-                            if (row, col) not in diagonal_positions]
-            # Pick a random position and number
-            if row_positions:
-                col = random.choice(row_positions)[1]
-                if remaining_numbers:
-                    number = remaining_numbers.pop(0)
-                    bingo_grid[row][col] = number
-
-        # Fill any remaining positions randomly
-        available_positions = [(r, c) for r in range(3) for c in range(5) 
-                              if (r, c) not in diagonal_positions 
-                              and bingo_grid[r][c] is None]
-        random.shuffle(available_positions)
-
-        # Fill remaining positions (up to 2 more)
-        for (row, col), number in zip(available_positions[:2], remaining_numbers):
-            bingo_grid[row][col] = number
+        # Take first 16 numbers for the 4x4 grid
+        selected_numbers = sdg_numbers[:16]
+        
+        # Fill the grid row by row
+        for i in range(4):
+            for j in range(4):
+                bingo_grid[i][j] = selected_numbers[i * 4 + j]
 
         bingo_card = BingoCard(
             team_id=team.id,

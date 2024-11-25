@@ -198,6 +198,8 @@ h1, .world-helper-title {
     display: flex;
     flex-direction: column;
     gap: 10px;
+    max-width: 400px;
+    margin: 0 auto;
 }
 
 .bingo-row {
@@ -207,8 +209,8 @@ h1, .world-helper-title {
 }
 
 .bingo-cell {
-    width: 80px;
-    height: 80px;
+    width: 70px;
+    height: 70px;
     border: 2px solid #ddd;
     border-radius: 8px;
     display: flex;
@@ -217,16 +219,31 @@ h1, .world-helper-title {
     position: relative;
     background: #f8f9fa;
     transition: all 0.3s ease;
-}
-
-.bingo-cell.empty {
-    background: #eee;
-    border-style: dashed;
+    font-weight: bold;
+    font-size: 1.1rem;
 }
 
 .bingo-cell.marked {
     background: var(--pink-light);
     border-color: var(--pink-primary);
+    color: var(--pink-primary);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .bingo-cell {
+        width: 50px;
+        height: 50px;
+        font-size: 1rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .bingo-cell {
+        width: 40px;
+        height: 40px;
+        font-size: 0.9rem;
+    }
 }
 
 .bingo-content {
@@ -992,5 +1009,62 @@ h2.theme-pink {
 .sponsors-card {
     border: none;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.sample-card {
+    max-width: 320px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.sample-card .bingo-row {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+}
+
+.sample-card .bingo-cell {
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    font-weight: bold;
+    background: #f8f9fa;
+    transition: all 0.3s ease;
+}
+
+.sample-card .bingo-cell.marked {
+    background: var(--pink-light);
+    border-color: var(--pink-primary);
+    color: var(--pink-primary);
+}
+
+@media (max-width: 768px) {
+    .sample-card {
+        max-width: 240px;
+    }
+    
+    .sample-card .bingo-cell {
+        width: 45px;
+        height: 45px;
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .sample-card {
+        max-width: 200px;
+    }
+    
+    .sample-card .bingo-cell {
+        width: 35px;
+        height: 35px;
+        font-size: 0.8rem;
+    }
 }
 

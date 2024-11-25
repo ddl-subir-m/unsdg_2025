@@ -163,13 +163,12 @@ document.addEventListener('DOMContentLoaded', function() {
             elements.phraseText.textContent = phrase;
             elements.copyPhraseBtn.style.display = 'block';
         });
-    }
 
-    // Copy button functionality
-    if (elements.copyPhraseBtn) {
+        // Copy button functionality
         elements.copyPhraseBtn.addEventListener('click', async function() {
             try {
-                await navigator.clipboard.writeText(elements.phraseText.textContent);
+                const phraseText = elements.phraseText.textContent.split('\n')[0].trim();
+                await navigator.clipboard.writeText(phraseText);
                 
                 const originalHTML = this.innerHTML;
                 this.innerHTML = '<i class="fas fa-check"></i> Copied!';
@@ -247,14 +246,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
     const addMemberBtn = document.getElementById('add_member_btn');
     const membersContainer = document.getElementById('team_members_container');
-    const MAX_MEMBERS = 5;
+    const MAX_MEMBERS = 30;
 
     if (addMemberBtn && membersContainer) {
         addMemberBtn.addEventListener('click', function() {
             const currentMembers = membersContainer.getElementsByClassName('member-input');
             
             if (currentMembers.length >= MAX_MEMBERS) {
-                showFlashMessage('Maximum 5 team members allowed', 'warning');
+                showFlashMessage('Maximum 30 team members allowed', 'warning');
                 return;
             }
 

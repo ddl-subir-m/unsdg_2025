@@ -65,30 +65,9 @@
                         <div class="col-12">
                             <div class="card">
                                 <div class="card-body">
-                                    <h4 class="mb-3 text-center">Sample Bingo Card:</h4>
+                                    <h4 class="mb-3 text-center fs-5">Win Prizes with SDG Bingo:</h4>
                                     <div class="bingo-grid sample-card mx-auto">
-                                        <!-- Add your sample bingo card grid here -->
-                                        <div class="bingo-row">
-                                            <div class="bingo-cell">1</div>
-                                            <div class="bingo-cell">7</div>
-                                            <div class="bingo-cell">13</div>
-                                            <div class="bingo-cell">4</div>
-                                            <div class="bingo-cell">10</div>
-                                        </div>
-                                        <div class="bingo-row">
-                                            <div class="bingo-cell">16</div>
-                                            <div class="bingo-cell marked">5</div>
-                                            <div class="bingo-cell">11</div>
-                                            <div class="bingo-cell">2</div>
-                                            <div class="bingo-cell">8</div>
-                                        </div>
-                                        <div class="bingo-row">
-                                            <div class="bingo-cell">14</div>
-                                            <div class="bingo-cell">3</div>
-                                            <div class="bingo-cell marked">9</div>
-                                            <div class="bingo-cell">15</div>
-                                            <div class="bingo-cell">6</div>
-                                        </div>
+                                        <!-- 4x4 grid will be populated by JavaScript -->
                                     </div>
                                 </div>
                             </div>
@@ -122,4 +101,42 @@
         </div>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Generate array of numbers 1-17
+    const numbers = Array.from({length: 17}, (_, i) => i + 1);
+    
+    // Shuffle array using Fisher-Yates algorithm
+    for (let i = numbers.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [numbers[i], numbers[j]] = [numbers[j], numbers[i]];
+    }
+    
+    // Take first 16 numbers for 4x4 grid
+    const selectedNumbers = numbers.slice(0, 16);
+    
+    // Get the bingo grid container
+    const bingoGrid = document.querySelector('.sample-card');
+    
+    // Create 4x4 grid
+    for (let i = 0; i < 4; i++) {
+        const row = document.createElement('div');
+        row.className = 'bingo-row';
+        
+        for (let j = 0; j < 4; j++) {
+            const cell = document.createElement('div');
+            cell.className = 'bingo-cell';
+            // Randomly mark some cells (optional)
+            if (Math.random() < 0.2) {
+                cell.classList.add('marked');
+            }
+            cell.textContent = selectedNumbers[i * 4 + j];
+            row.appendChild(cell);
+        }
+        
+        bingoGrid.appendChild(row);
+    }
+});
+</script>
 {% endblock %}

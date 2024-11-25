@@ -56,6 +56,6 @@ class TeamMember(db.Model):
 class BingoCard(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     team_id = db.Column(db.Integer, db.ForeignKey('team.id'), nullable=False)
-    card_numbers = db.Column(JSONType, nullable=False)  # 5x3 grid of SDG numbers
+    card_numbers = db.Column(JSONType, nullable=False)  # 4x4 grid of SDG numbers
     marked_numbers = db.Column(JSONType, default=list)  # List of marked SDG numbers
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
