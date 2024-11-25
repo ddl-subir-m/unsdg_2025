@@ -536,3 +536,7 @@ def learn_unsdg():
         }
     }
     return render_template('learn_unsdg.html', sdg_details=sdg_details)
+
+@bp.route('/sponsors')
+def sponsors():
+    return render_template('sponsors.html')
