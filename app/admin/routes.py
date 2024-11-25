@@ -17,7 +17,7 @@ def add_notification():
         notification = Notification(message=message)
         db.session.add(notification)
         db.session.commit()
-        flash('Notification added successfully!', 'success')
+        # flash('Notification added successfully!', 'success')
     return redirect(url_for('admin.manage_notifications'))
 
 @bp.route('/notifications/<int:id>/delete', methods=['POST'])
@@ -25,5 +25,5 @@ def delete_notification(id):
     notification = Notification.query.get_or_404(id)
     db.session.delete(notification)
     db.session.commit()
-    flash('Notification deleted successfully!', 'success')
+    # flash('Notification deleted successfully!', 'success')
     return redirect(url_for('admin.manage_notifications')) 
