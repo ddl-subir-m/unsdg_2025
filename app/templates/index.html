@@ -4,6 +4,33 @@
 
 {% block content %}
 <div class="container">
+    <!-- Notifications Section -->
+    <div class="card mb-4 notification-card">
+        <div class="card-header bg-pink text-white">
+            <h5 class="mb-0">
+                <i class="fas fa-bullhorn me-2"></i>Announcements
+            </h5>
+        </div>
+        <div class="card-body">
+            {% if notifications %}
+                {% for notification in notifications %}
+                    <div class="notification-item mb-2">
+                        <p class="mb-1">{{ notification.message|safe }}</p>
+                        <small class="text-muted">Posted {{ notification.created_at.strftime('%B %d, %Y') }}</small>
+                    </div>
+                    {% if not loop.last %}
+                        <hr class="my-3">
+                    {% endif %}
+                {% endfor %}
+            {% else %}
+                <div class="text-center text-muted">
+                    <i class="fas fa-comment-slash fa-2x mb-2"></i>
+                    <p>No notifications at the moment. Check back soon for updates!</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
     <!-- Hero Section -->
     <div class="text-center mb-5">
         <p class="lead">Learn about the UN Sustainable Development Goals (UNSDG) and organize events that support the UNSDG!</p>
@@ -26,7 +53,7 @@
                     <!-- Top Row with How to Play and Win Prizes -->
                     <div class="row mb-4">
                         <!-- How to Play Column -->
-                        <div class="col-md-6">
+                        <div class="col-md-4">
                             <div class="card h-100">
                                 <div class="card-body">
                                     <h4 class="mb-3">How to Play:</h4>
@@ -39,11 +66,11 @@
                             </div>
                         </div>
 
-                        <!-- Win Prizes Column -->
-                        <div class="col-md-6">
+                        <!-- Win Patterns Column -->
+                        <div class="col-md-4">
                             <div class="card h-100">
                                 <div class="card-body">
-                                    <h4 class="mb-3">Win Prizes by Completing:</h4>
+                                    <h4 class="mb-3">BINGO Win Patterns:</h4>
                                     <ul class="list-group mb-4">
                                         <li class="list-group-item">
                                             <i class="fas fa-arrows-alt-h text-pink me-2"></i>Any horizontal row
@@ -53,6 +80,32 @@
                                         </li>
                                         <li class="list-group-item">
                                             <i class="fas fa-grip-horizontal text-pink me-2"></i>Full card
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Prize Categories Column (New) -->
+                        <div class="col-md-4">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <h4 class="mb-3">Prize Categories:</h4>
+                                    <ul class="list-group mb-4">
+                                        <li class="list-group-item">
+                                            <i class="fas fa-gift text-pink me-2"></i>
+                                            <strong>Ongoing Prizes:</strong>
+                                            <small class="d-block text-muted ms-4">Win prizes for each BINGO pattern completed!</small>
+                                        </li>
+                                        <li class="list-group-item">
+                                            <i class="fas fa-trophy text-pink me-2"></i>
+                                            <strong>Grand Prize:</strong>
+                                            <small class="d-block text-muted ms-4">Team with most events by <strong>March 31, 2025</strong></small>
+                                        </li>
+                                        <li class="list-group-item">
+                                            <i class="fas fa-star text-pink me-2"></i>
+                                            <strong>Ultimate Challenge:</strong>
+                                            <small class="d-block text-muted ms-4">Complete all SDG Goals Progress</small>
                                         </li>
                                     </ul>
                                 </div>

@@ -59,3 +59,12 @@ class BingoCard(db.Model):
     card_numbers = db.Column(JSONType, nullable=False)  # 4x4 grid of SDG numbers
     marked_numbers = db.Column(JSONType, default=list)  # List of marked SDG numbers
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+class Notification(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    message = db.Column(db.Text, nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    active = db.Column(db.Boolean, default=True)
+
+    def __repr__(self):
+        return f'<Notification {self.id}>'

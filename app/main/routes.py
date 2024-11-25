@@ -2,7 +2,7 @@ from flask import render_template, redirect, url_for, flash, request, jsonify
 from datetime import date, datetime
 from app.main import bp
 from app import db
-from app.models import Team, Event, TeamMember, BingoCard
+from app.models import Team, Event, TeamMember, BingoCard, Notification
 from sqlalchemy import func
 from openai import OpenAI
 import json
@@ -79,7 +79,8 @@ def update_bingo_card(team_id, sdg_goals):
 
 @bp.route('/')
 def index():
-    return render_template('index.html')
+    notifications = Notification.query.order_by(Notification.created_at.desc()).all()
+    return render_template('index.html', notifications=notifications)
 
 @bp.route('/create_event', methods=['GET', 'POST'])
 def create_event():

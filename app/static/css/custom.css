@@ -1068,3 +1068,33 @@ h2.theme-pink {
     }
 }
 
+.announcement-card {
+    border: none;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.announcement-card .card-header {
+    background: linear-gradient(45deg, var(--pink-primary), #ff9ecd);
+    color: white;
+}
+
+.announcement-item {
+    position: relative;
+    padding-left: 20px;
+}
+
+.announcement-item::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 8px;
+    width: 8px;
+    height: 8px;
+    background-color: var(--pink-primary);
+    border-radius: 50%;
+}
+
+.bg-pink {
+    background-color: var(--pink-primary) !important;
+}
+
