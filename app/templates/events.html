@@ -239,21 +239,23 @@ function confirmDeleteEvent() {
 // Wrap the event listener in DOMContentLoaded
 document.addEventListener('DOMContentLoaded', function() {
     const toggleButton = document.getElementById('togglePassword');
-    if (toggleButton) {
-        toggleButton.addEventListener('click', function() {
-            const teamPhrase = document.getElementById('teamPhrase');
-            const icon = toggleButton.querySelector('i.fas');
+    const teamPhrase = document.getElementById('teamPhrase');
+    
+    if (toggleButton && teamPhrase) {
+        toggleButton.addEventListener('click', function(e) {
+            e.preventDefault();
             
-            if (teamPhrase && icon) {
-                if (teamPhrase.type === 'password') {
-                    teamPhrase.type = 'text';
-                    icon.classList.remove('fa-eye');
-                    icon.classList.add('fa-eye-slash');
-                } else {
-                    teamPhrase.type = 'password';
-                    icon.classList.remove('fa-eye-slash');
-                    icon.classList.add('fa-eye');
-                }
+            // For Font Awesome 6 SVG icons
+            const svg = this.querySelector('svg');
+            
+            if (teamPhrase.type === 'password') {
+                teamPhrase.type = 'text';
+                // Change the icon data
+                svg.dataset.icon = 'eye-slash';
+            } else {
+                teamPhrase.type = 'password';
+                // Change the icon data
+                svg.dataset.icon = 'eye';
             }
         });
     }
