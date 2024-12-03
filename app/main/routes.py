@@ -94,12 +94,12 @@ def create_event():
                 team_id = request.form.get('selected_team_id')
                 
                 if not team_id:
-                    flash('Please select a team ', 'error')
+                    flash(('Please select a team', request.path), 'error')
                     return redirect(url_for('main.create_event'))
                 
                 team = Team.query.get(team_id)
                 if not team:
-                    flash('Invalid team', 'error')
+                    flash(('Invalid team', request.path), 'error')
                     return redirect(url_for('main.create_event'))
             else:
                 # Create new team
@@ -135,7 +135,7 @@ def create_event():
             sdg_goals = request.form.get('sdg_goals')
 
             if not all([title, description, event_date, start_time, end_time, timezone, location]):
-                flash('Please fill in all event details', 'error')
+                flash(('Please fill in all event details', request.path), 'error')
                 return redirect(url_for('main.create_event'))
 
             try:
@@ -143,7 +143,7 @@ def create_event():
                 end_datetime = datetime.strptime(f"{event_date} {end_time}", '%Y-%m-%d %H:%M')
                 
                 if end_datetime <= start_datetime:
-                    flash('End time must be after start time', 'error')
+                    flash(('End time must be after start time', request.path), 'error')
                     return redirect(url_for('main.create_event'))
             except ValueError:
                 flash('Invalid date or time format', 'error')
@@ -164,7 +164,7 @@ def create_event():
             db.session.add(event)
             db.session.commit()
 
-            flash(f'Event "{title}" has been created successfully!', 'success')
+            flash((f'Event "{title}" has been created successfully!', request.path), 'success')
             today_date = date.today().strftime('%Y-%m-%d')
             
             # Pass the selected team information back to the template
@@ -180,7 +180,7 @@ def create_event():
 
         except Exception as e:
             db.session.rollback()
-            flash(f'An error occurred: {str(e)}', 'error')
+            flash((f'An error occurred: {str(e)}', request.path), 'error')
             return redirect(url_for('main.create_event'))
 
     # GET request
@@ -279,7 +279,9 @@ def create_team():
         
         # Validate input
         if not data.get('name') or not data.get('team_phrase') or not data.get('members'):
-            return jsonify({'message': 'Please fill in all required fields'}), 400
+            return jsonify({
+                'message': 'Please fill in all required fields'
+            }), 400
         
         # Check for existing teams
         new_member_names = sorted([m.strip().lower() for m in data['members'] if m.strip()])
@@ -334,6 +336,9 @@ def create_team():
         
         db.session.commit()
         
+        # Use the create_event route path instead of the API path
+        flash(('Team created successfully!', url_for('main.create_event')), 'success')
+        
         return jsonify({
             'message': 'Team created successfully',
             'team_id': team.id,
@@ -342,6 +347,7 @@ def create_team():
 
     except Exception as e:
         db.session.rollback()
+        flash((f'An error occurred: {str(e)}', url_for('main.create_event')), 'error')
         return jsonify({'message': f'An error occurred: {str(e)}'}), 500
 
 @bp.route('/team_profiles')

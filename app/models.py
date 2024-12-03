@@ -14,9 +14,21 @@ class Team(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     team_phrase = db.Column(db.String(100), nullable=False)
     name = db.Column(db.String(64), nullable=False)
-    members = db.relationship('TeamMember', backref='team', lazy='dynamic')
-    events = db.relationship('Event', backref='team', lazy='dynamic')
-    bingo_card = db.relationship('BingoCard', backref='team', uselist=False)
+    members = db.relationship('TeamMember', backref='team', lazy='dynamic', 
+                            cascade='all, delete-orphan')
+    events = db.relationship('Event', backref='team', lazy='dynamic',
+                           cascade='all, delete-orphan')
+    bingo_card = db.relationship('BingoCard', backref='team', uselist=False,
+                                cascade='all, delete-orphan')
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'team_phrase': self.team_phrase,
+            'created_at': self.created_at.strftime('%Y-%m-%d %H:%M:%S') if self.created_at else None
+        }
 
 class JSONType(TypeDecorator):
     impl = Text
@@ -39,26 +51,57 @@ class Event(db.Model):
     end_date = db.Column(db.DateTime, nullable=False)
     timezone = db.Column(db.String(50), nullable=False)
     location = db.Column(db.String(100))
-    team_id = db.Column(db.Integer, db.ForeignKey('team.id'), nullable=False)
+    team_id = db.Column(db.Integer, db.ForeignKey('team.id', ondelete='CASCADE'), nullable=False)
     sdg_goals = db.Column(JSONType)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'title': self.title,
+            'description': self.description,
+            'start_date': self.start_date,
+            'end_date': self.end_date,
+            'timezone': self.timezone,
+            'location': self.location,
+            'team_id': self.team_id,
+            'sdg_goals': self.sdg_goals,
+            'created_at': self.created_at
+        }
 
 class TeamMember(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64), nullable=False)
-    team_id = db.Column(db.Integer, db.ForeignKey('team.id'), nullable=False)
+    team_id = db.Column(db.Integer, db.ForeignKey('team.id', ondelete='CASCADE'), nullable=False)
     is_captain = db.Column(db.Boolean, default=False)
 
     __table_args__ = (
         db.UniqueConstraint('team_id', 'name', name='unique_member_per_team'),
     )
 
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'team_id': self.team_id,
+            'is_captain': self.is_captain
+        }
+
 class BingoCard(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    team_id = db.Column(db.Integer, db.ForeignKey('team.id'), nullable=False)
-    card_numbers = db.Column(JSONType, nullable=False)  # 4x4 grid of SDG numbers
-    marked_numbers = db.Column(JSONType, default=list)  # List of marked SDG numbers
+    team_id = db.Column(db.Integer, db.ForeignKey('team.id', ondelete='CASCADE'), nullable=False)
+    card_numbers = db.Column(JSONType)
+    marked_numbers = db.Column(JSONType)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'team_id': self.team_id,
+            'card_numbers': self.card_numbers,
+            'marked_numbers': self.marked_numbers,
+            'created_at': self.created_at.strftime('%Y-%m-%d %H:%M:%S') if self.created_at else None
+        }
 
 class Notification(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -68,3 +111,10 @@ class Notification(db.Model):
 
     def __repr__(self):
         return f'<Notification {self.id}>'
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'message': self.message,
+            'created_at': self.created_at.strftime('%Y-%m-%d %H:%M:%S') if self.created_at else None
+        }

@@ -318,6 +318,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 });
 
                 const data = await response.json();
+                console.log('Response:', response.status, data);
 
                 if (response.ok) {
                     // Update the form with the new team's information
@@ -325,15 +326,14 @@ document.addEventListener('DOMContentLoaded', function() {
                     document.getElementById('selected_team_id').value = data.team_id;
                     document.getElementById('team_phrase').value = teamPhrase;
                     
-                    // Show success message
-                    showFlashMessage('Team created successfully!', 'success');
-                    
-                    
                     // Switch to the existing team tab and show the selected team
                     document.getElementById('existing-team-tab').click();
                     document.getElementById('team_search').value = teamName;
+                    
+                    showFlashMessage('Team created successfully!', 'success');
                 } else {
-                    showFlashMessage(data.message || 'Failed to create team', 'danger');
+                    // Show the error message from the server
+                    showFlashMessage(data.message, 'danger');
                 }
             } catch (error) {
                 console.error('Error:', error);
@@ -424,16 +424,30 @@ function debounce(func, wait) {
 
 // Add this function at the start of your file
 async function showFlashMessage(message, category) {
-    const flashContainer = document.querySelector('.flash-messages');
-    if (flashContainer) {
-        const alert = document.createElement('div');
-        alert.className = `alert alert-${category} alert-dismissible fade show`;
-        alert.innerHTML = `
-            ${message}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        `;
-        flashContainer.appendChild(alert);
+    console.log('Showing flash message:', message, category);
+    
+    let flashContainer = document.querySelector('.flash-messages');
+    
+    // Create container if it doesn't exist
+    if (!flashContainer) {
+        console.log('Creating flash container');
+        flashContainer = document.createElement('div');
+        flashContainer.className = 'flash-messages';
+        document.querySelector('.container').insertBefore(flashContainer, document.querySelector('.container').firstChild);
     }
+    
+    const alert = document.createElement('div');
+    alert.className = `alert alert-${category} alert-dismissible fade show`;
+    alert.innerHTML = `
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    `;
+    flashContainer.appendChild(alert);
+
+    // Optional: Auto-dismiss after 5 seconds
+    setTimeout(() => {
+        alert.remove();
+    }, 30000);
 }
 
 // Add this function outside the existing event listeners
@@ -466,5 +480,41 @@ function removeSDGBadge(button, goalToRemove, isPrimary) {
     if (currentData.goals.length === 0) {
         detectedSdgs.classList.add('d-none');
         sdgDetectionStatus.innerHTML = '<small><i class="fas fa-info-circle"></i> SDG goals will be automatically detected from your event description</small>';
+    }
+}
+
+// Add error handling for team creation
+async function createTeam(teamData) {
+    try {
+        const response = await fetch('/api/create_team', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(teamData)
+        });
+
+        const data = await response.json();
+        
+        if (!response.ok) {
+            // Display error message in a Bootstrap alert
+            const alertDiv = document.createElement('div');
+            alertDiv.className = 'alert alert-danger alert-dismissible fade show';
+            alertDiv.innerHTML = `
+                ${data.message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            `;
+            
+            // Insert at the top of the form
+            const form = document.querySelector('#new-team');
+            form.insertBefore(alertDiv, form.firstChild);
+            
+            return false;
+        }
+        
+        return true;
+    } catch (error) {
+        console.error('Error:', error);
+        return false;
     }
 }

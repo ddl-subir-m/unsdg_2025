@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block title %}Database Management{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 class="mb-4">Database Management</h1>
+
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        {% for model_name, model in models.items() %}
+        <div class="col">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5 class="card-title">{{ model_name }}</h5>
+                    <p class="card-text">
+                        <span class="badge bg-primary">{{ model_counts[model_name] }} records</span>
+                    </p>
+                    <a href="{{ url_for('admin.view_model', model_name=model_name) }}" 
+                       class="btn btn-primary">
+                        <i class="fas fa-database me-2"></i>View Records
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %} 

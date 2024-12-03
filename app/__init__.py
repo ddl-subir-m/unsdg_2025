@@ -1,4 +1,5 @@
 from dotenv import load_dotenv
+from datetime import datetime
 
 from flask import Flask, render_template, url_for
 from flask_sqlalchemy import SQLAlchemy
@@ -15,6 +16,23 @@ def create_app(config_class=Config):
 
     db.init_app(app)
     migrate.init_app(app, db)
+
+    # Add datetime filter
+    @app.template_filter('datetime')
+    def format_datetime(value):
+        if value is None:
+            return ''
+        if isinstance(value, str):
+            try:
+                # Try to parse the string into a datetime object
+                value = datetime.strptime(value, '%Y-%m-%d %H:%M:%S')
+            except ValueError:
+                # If parsing fails, return the original string
+                return value
+        return value.strftime('%Y-%m-%d %H:%M:%S')
+
+    # Register the filter with your app
+    app.jinja_env.filters['datetime'] = format_datetime
 
     from app.main import bp as main_bp
     app.register_blueprint(main_bp)
