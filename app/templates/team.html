@@ -225,6 +225,11 @@
                                 <i class="fas fa-eye"></i>
                             </button>
                         </div>
+                        <small class="form-text mt-2">
+                            <i class="fas fa-question-circle"></i>
+                            Forgot your team phrase? 
+                            Contact <a href="#">sdgworldhelper@gmail.com</a>
+                        </small>
                     </div>
                 </div>
             </div>
@@ -264,7 +269,7 @@ body {
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    const teamId = {{ team.id }};
+    const teamId = '{{ team.id }}';
     const pendingMembers = new Set();
     let captainChanged = false;
     

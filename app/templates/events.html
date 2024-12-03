@@ -152,6 +152,11 @@
                                 <i class="fas fa-eye"></i>
                             </button>
                         </div>
+                        <small class="form-text mt-2">
+                            <i class="fas fa-question-circle"></i>
+                            Forgot your team phrase? 
+                            Contact <a href="#">sdgworldhelper@gmail.com</a>
+                        </small>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -246,5 +251,15 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
+
+function openTeamPhraseEmail(teamName, memberNames) {
+    const subject = encodeURIComponent(`Team phrase for ${teamName}`);
+    const body = encodeURIComponent(
+        `Hello,\n\nI need help recovering the team phrase for team "${teamName}".\n\n` +
+        `Team Members:\n${memberNames.join('\n')}\n\n` +
+        `Please help me recover our team phrase.\n\nThank you!`
+    );
+    window.location.href = `mailto:sdgworldhelper@gmail.com?subject=${subject}&body=${body}`;
+}
 </script>
 {% endblock %} 
