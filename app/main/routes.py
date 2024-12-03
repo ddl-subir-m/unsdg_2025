@@ -546,3 +546,95 @@ def learn_unsdg():
 @bp.route('/sponsors')
 def sponsors():
     return render_template('sponsors.html')
+
+@bp.route('/api/teams/<int:team_id>/members', methods=['POST'])
+def add_team_member(team_id):
+    data = request.get_json()
+    team = Team.query.get_or_404(team_id)
+    
+    if not team.team_phrase == data.get('team_phrase'):
+        return jsonify({'message': 'Invalid team phrase'}), 403
+    
+    new_member_name = data.get('name', '').strip()
+    if not new_member_name:
+        return jsonify({'message': 'Member name is required'}), 400
+        
+    # Check if member already exists
+    existing_member = TeamMember.query.filter_by(
+        team_id=team_id, 
+        name=new_member_name
+    ).first()
+    
+    if existing_member:
+        return jsonify({'message': 'Member already exists'}), 400
+        
+    new_member = TeamMember(
+        name=new_member_name,
+        team_id=team_id,
+        is_captain=False
+    )
+    
+    try:
+        db.session.add(new_member)
+        db.session.commit()
+        return jsonify({'message': 'Member added successfully'}), 201
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'message': str(e)}), 500
+
+@bp.route('/api/teams/<int:team_id>/captain', methods=['PUT'])
+def change_team_captain(team_id):
+    data = request.get_json()
+    team = Team.query.get_or_404(team_id)
+    
+    if not team.team_phrase == data.get('team_phrase'):
+        return jsonify({'message': 'Invalid team phrase'}), 403
+    
+    new_captain_id = data.get('new_captain_id')
+    if not new_captain_id:
+        return jsonify({'message': 'New captain ID is required'}), 400
+        
+    try:
+        # Remove current captain
+        current_captain = TeamMember.query.filter_by(
+            team_id=team_id, 
+            is_captain=True
+        ).first()
+        if current_captain:
+            current_captain.is_captain = False
+            
+        # Set new captain
+        new_captain = TeamMember.query.get(new_captain_id)
+        if not new_captain or new_captain.team_id != team_id:
+            return jsonify({'message': 'Invalid team member'}), 400
+            
+        new_captain.is_captain = True
+        db.session.commit()
+        return jsonify({'message': 'Captain updated successfully'}), 200
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'message': str(e)}), 500
+
+@bp.route('/api/teams/<int:team_id>/members/<int:member_id>', methods=['DELETE'])
+def delete_team_member(team_id, member_id):
+    data = request.get_json()
+    team = Team.query.get_or_404(team_id)
+    
+    if not team.team_phrase == data.get('team_phrase'):
+        return jsonify({'message': 'Invalid team phrase'}), 403
+        
+    member = TeamMember.query.get_or_404(member_id)
+    
+    if member.team_id != team_id:
+        return jsonify({'message': 'Member does not belong to this team'}), 400
+        
+    if member.is_captain:
+        return jsonify({'message': 'Cannot delete team captain'}), 400
+        
+    try:
+        db.session.delete(member)
+        db.session.commit()
+        return jsonify({'message': 'Member deleted successfully'}), 200
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'message': str(e)}), 500

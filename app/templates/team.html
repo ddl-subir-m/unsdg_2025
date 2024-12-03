@@ -10,20 +10,40 @@
             
             <!-- Team Members Section -->
             <div class="mb-4">
-                <h3><i class="fas fa-users me-2"></i>Team Members</h3>
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h3><i class="fas fa-users me-2"></i>Team Members</h3>
+                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#teamManageModal">
+                        <i class="fas fa-users-cog me-2"></i>Manage Team Members
+                    </button>
+                </div>
                 <div class="list-group">
+                    {# First display the captain #}
                     {% for member in team.members %}
-                    <div class="list-group-item">
-                        <div class="d-flex align-items-center">
-                            <i class="fas {% if member.is_captain %}fa-crown text-warning{% else %}fa-user{% endif %} me-3"></i>
-                            <div>
-                                <h5 class="mb-0">{{ member.name }}</h5>
-                                {% if member.is_captain %}
-                                <small class="text-muted">Team Captain</small>
-                                {% endif %}
+                        {% if member.is_captain %}
+                        <div class="list-group-item">
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-crown text-warning me-3"></i>
+                                <div>
+                                    <h5 class="mb-0">{{ member.name }}</h5>
+                                    <small class="text-muted">Team Captain</small>
+                                </div>
                             </div>
                         </div>
-                    </div>
+                        {% endif %}
+                    {% endfor %}
+                    
+                    {# Then display other members #}
+                    {% for member in team.members %}
+                        {% if not member.is_captain %}
+                        <div class="list-group-item">
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-user me-3"></i>
+                                <div>
+                                    <h5 class="mb-0">{{ member.name }}</h5>
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
                     {% endfor %}
                 </div>
             </div>
@@ -135,4 +155,277 @@
         </div>
     </div>
 </div>
+
+<!-- Team Management Modal -->
+<div class="modal" id="teamManageModal" tabindex="-1" aria-labelledby="teamManageModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="teamManageModalLabel">Manage Team Members</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Add New Member -->
+                <div class="mb-4">
+                    <label class="form-label">Add New Member</label>
+                    <div class="input-group">
+                        <input type="text" class="form-control" id="newMember" placeholder="Enter new member's name">
+                        <button class="btn btn-outline-primary" type="button" id="addToListBtn">
+                            <i class="fas fa-plus"></i>
+                        </button>
+                    </div>
+                    <div id="pendingMembers" class="mt-2">
+                        <!-- Pending members will be listed here -->
+                    </div>
+                </div>
+
+                <!-- Change Captain -->
+                <div class="mb-4">
+                    <label for="newCaptain" class="form-label">Change Team Captain</label>
+                    <select class="form-select" id="newCaptain">
+                        {% for member in team.members %}
+                        <option value="{{ member.id }}" {% if member.is_captain %}selected{% endif %}>
+                            {{ member.name }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <!-- Manage Existing Members -->
+                <div class="mb-4">
+                    <label class="form-label">Manage Existing Members</label>
+                    <div class="list-group">
+                        {% for member in team.members %}
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                <i class="fas {% if member.is_captain %}fa-crown text-warning{% else %}fa-user{% endif %} me-2"></i>
+                                {{ member.name }}
+                            </div>
+                            {% if not member.is_captain %}
+                            <button type="button" class="btn btn-outline-danger btn-sm" 
+                                    onclick="confirmDeleteMember('{{ member.id }}', '{{ member.name }}')">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                            {% endif %}
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Team Phrase (shown on submit) -->
+                <div id="teamPhraseSection" class="d-none">
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>Please enter your team phrase to confirm changes
+                    </div>
+                    <div class="mb-3">
+                        <label for="teamPhrase" class="form-label">Team Phrase</label>
+                        <div class="input-group">
+                            <input type="password" class="form-control" id="teamPhrase" placeholder="Enter team phrase">
+                            <button class="btn btn-outline-secondary" type="button" id="togglePhrase">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="showPhraseBtn">Continue</button>
+                <button type="button" class="btn btn-success d-none" id="submitChangesBtn">Submit Changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Anti-flicker CSS */
+.modal {
+    will-change: transform;
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    perspective: 1000px;
+}
+
+.modal-backdrop {
+    will-change: opacity;
+    backface-visibility: hidden;
+}
+
+.modal-open {
+    overflow: hidden;
+    padding-right: 0 !important;
+}
+
+body {
+    overflow-y: scroll !important;
+    padding-right: 0 !important;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const teamId = {{ team.id }};
+    const pendingMembers = new Set();
+    let captainChanged = false;
+    
+    // UI Elements
+    const addToListBtn = document.getElementById('addToListBtn');
+    const newMemberInput = document.getElementById('newMember');
+    const pendingMembersDiv = document.getElementById('pendingMembers');
+    const newCaptainSelect = document.getElementById('newCaptain');
+    const teamPhraseSection = document.getElementById('teamPhraseSection');
+    const showPhraseBtn = document.getElementById('showPhraseBtn');
+    const submitChangesBtn = document.getElementById('submitChangesBtn');
+    const togglePhraseBtn = document.getElementById('togglePhrase');
+    const teamPhraseInput = document.getElementById('teamPhrase');
+
+    // Store initial captain selection
+    const initialCaptainId = newCaptainSelect.value;
+
+    // Define confirmDeleteMember globally
+    window.confirmDeleteMember = function(memberId, memberName) {
+        if (confirm(`Are you sure you want to remove ${memberName} from the team?`)) {
+            showPhraseSection(async () => {
+                const teamPhrase = teamPhraseInput.value.trim();
+                if (!teamPhrase) {
+                    alert('Please enter the team phrase');
+                    return;
+                }
+
+                try {
+                    const response = await fetch(`/api/teams/${teamId}/members/${memberId}`, {
+                        method: 'DELETE',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            team_phrase: teamPhrase
+                        })
+                    });
+
+                    if (!response.ok) {
+                        const data = await response.json();
+                        throw new Error(data.message || 'Failed to delete member');
+                    }
+
+                    location.reload();
+                } catch (error) {
+                    alert(error.message);
+                }
+            });
+        }
+    };
+
+    // Helper function to show phrase section
+    function showPhraseSection(callback) {
+        teamPhraseSection.classList.remove('d-none');
+        showPhraseBtn.classList.add('d-none');
+        submitChangesBtn.classList.remove('d-none');
+        submitChangesBtn.onclick = callback;
+    }
+
+    // Handle adding members to pending list
+    addToListBtn.addEventListener('click', () => {
+        const memberName = newMemberInput.value.trim();
+        if (memberName) {
+            pendingMembers.add(memberName);
+            updatePendingMembersList();
+            newMemberInput.value = '';
+        }
+    });
+
+    // Handle captain selection change
+    newCaptainSelect.addEventListener('change', () => {
+        captainChanged = (newCaptainSelect.value !== initialCaptainId);
+    });
+
+    // Toggle phrase visibility
+    togglePhraseBtn.addEventListener('click', () => {
+        const type = teamPhraseInput.type === 'password' ? 'text' : 'password';
+        teamPhraseInput.type = type;
+        togglePhraseBtn.innerHTML = `<i class="fas fa-eye${type === 'password' ? '' : '-slash'}"></i>`;
+    });
+
+    // Show phrase section
+    showPhraseBtn.addEventListener('click', () => {
+        if (!pendingMembers.size && !captainChanged) {
+            alert('No changes have been made');
+            return;
+        }
+        showPhraseSection(async () => {
+            const teamPhrase = teamPhraseInput.value.trim();
+            if (!teamPhrase) {
+                alert('Please enter the team phrase');
+                return;
+            }
+
+            try {
+                // Add new members
+                if (pendingMembers.size > 0) {
+                    for (const memberName of pendingMembers) {
+                        const response = await fetch(`/api/teams/${teamId}/members`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                name: memberName,
+                                team_phrase: teamPhrase
+                            })
+                        });
+                        
+                        if (!response.ok) {
+                            throw new Error(`Failed to add member: ${memberName}`);
+                        }
+                    }
+                }
+
+                // Update captain if changed
+                if (captainChanged) {
+                    const response = await fetch(`/api/teams/${teamId}/captain`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            new_captain_id: newCaptainSelect.value,
+                            team_phrase: teamPhrase
+                        })
+                    });
+
+                    if (!response.ok) {
+                        throw new Error('Failed to update captain');
+                    }
+                }
+
+                // Reload page on success
+                location.reload();
+            } catch (error) {
+                alert(error.message);
+            }
+        });
+    });
+
+    // Helper function to update pending members list
+    function updatePendingMembersList() {
+        pendingMembersDiv.innerHTML = Array.from(pendingMembers).map(member => `
+            <div class="badge bg-primary me-2 mb-2">
+                ${member}
+                <button type="button" class="btn-close btn-close-white ms-2" 
+                        onclick="this.parentElement.remove(); pendingMembers.delete('${member}');">
+                </button>
+            </div>
+        `).join('');
+    }
+
+    // Reset modal on close
+    const modalElement = document.getElementById('teamManageModal');
+    modalElement.addEventListener('hidden.bs.modal', () => {
+        pendingMembers.clear();
+        updatePendingMembersList();
+        newCaptainSelect.value = initialCaptainId;
+        teamPhraseSection.classList.add('d-none');
+        showPhraseBtn.classList.remove('d-none');
+        submitChangesBtn.classList.add('d-none');
+        teamPhraseInput.value = '';
+        teamPhraseInput.type = 'password';
+        togglePhraseBtn.innerHTML = '<i class="fas fa-eye"></i>';
+        captainChanged = false;
+    });
+});
+</script>
 {% endblock %} 
