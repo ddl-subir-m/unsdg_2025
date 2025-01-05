@@ -1405,3 +1405,32 @@ h2.theme-pink {
     background-color: var(--pink-hover);
 }
 
+.toast-container {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1050;
+}
+
+.custom-toast {
+    background: white;
+    border-radius: 8px;
+    padding: 12px 24px;
+    margin-bottom: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transform: translateX(120%);
+    transition: transform 0.3s ease;
+    border-left: 4px solid var(--pink-primary);
+}
+
+.custom-toast.show {
+    transform: translateX(0);
+}
+
+.custom-toast i {
+    color: var(--pink-primary);
+}
+

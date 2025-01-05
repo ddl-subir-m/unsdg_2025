@@ -18,10 +18,18 @@
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-start">
                             <h5 class="card-title" style="color: #FF69B4;">{{ event.title }}</h5>
-                            <button class="btn btn-outline-danger btn-sm" 
-                                    onclick="showDeleteEventModal('{{ event.id }}', '{{ event.title }}')">
-                                <i class="fas fa-trash"></i>
-                            </button>
+                            <div>
+                                <button class="btn btn-outline-secondary btn-sm me-2" 
+                                        onclick="copyEventDetails(this)" 
+                                        data-event-id="{{ event.id }}"
+                                        title="Copy event details">
+                                    <i class="fas fa-share-alt"></i>
+                                </button>
+                                <button class="btn btn-outline-danger btn-sm" 
+                                        onclick="showDeleteEventModal('{{ event.id }}', '{{ event.title }}')">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
                         </div>
                         <h6 class="card-subtitle mb-2 text-muted">
                             <i class="fas fa-users me-1" style="color: #FF69B4;"></i>
@@ -84,7 +92,21 @@
             <div class="col">
                 <div class="card h-100">
                     <div class="card-body">
-                        <h5 class="card-title" style="color: #FF69B4;">{{ event.title }}</h5>
+                        <div class="d-flex justify-content-between align-items-start">
+                            <h5 class="card-title" style="color: #FF69B4;">{{ event.title }}</h5>
+                            <div>
+                                <button class="btn btn-outline-secondary btn-sm me-2" 
+                                        onclick="copyEventDetails(this)" 
+                                        data-event-id="{{ event.id }}"
+                                        title="Copy event details">
+                                    <i class="fas fa-share-alt"></i>
+                                </button>
+                                <button class="btn btn-outline-danger btn-sm" 
+                                        onclick="showDeleteEventModal('{{ event.id }}', '{{ event.title }}')">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
                         <h6 class="card-subtitle mb-2 text-muted">
                             <i class="fas fa-users me-1" style="color: #FF69B4;"></i>
                             {{ event.team.name }}
@@ -173,19 +195,6 @@
 <script>
 let eventToDelete = null;
 
-// Add the flash message function
-function showFlashMessage(message, category) {
-    const flashContainer = document.querySelector('.flash-messages');
-    if (flashContainer) {
-        const alert = document.createElement('div');
-        alert.className = `alert alert-${category} alert-dismissible fade show`;
-        alert.innerHTML = `
-            ${message}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        `;
-        flashContainer.appendChild(alert);
-    }
-}
 
 function showDeleteEventModal(eventId, eventTitle) {
     eventToDelete = eventId;
@@ -208,7 +217,7 @@ function confirmDeleteEvent() {
     .then(response => response.json())
     .then(data => {
         if (data.message === 'Event deleted successfully') {
-            showFlashMessage('Event deleted successfully!', 'success');
+            showToast('Event deleted successfully! 🗑️', 'success');
             // Hide the modal
             const modal = bootstrap.Modal.getInstance(document.getElementById('deleteEventModal'));
             modal.hide();
@@ -217,13 +226,13 @@ function confirmDeleteEvent() {
                 location.reload();
             }, 1000);
         } else {
-            // showFlashMessage(data.message, 'danger');
-            alert(data.message);
+            showToast(data.message, 'error');
+            // alert(data.message);
         }
     })
     .catch(error => {
         console.error('Error:', error);
-        alert('An error occurred while deleting the event');
+        showToast('An error occurred while deleting the event ❌', 'error');
     });
 }
 
@@ -262,4 +271,5 @@ function openTeamPhraseEmail(teamName, memberNames) {
     window.location.href = `mailto:sdgworldhelper@gmail.com?subject=${subject}&body=${body}`;
 }
 </script>
+<script src="{{ url_for('static', filename='js/event_creation.js') }}"></script>
 {% endblock %} 

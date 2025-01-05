@@ -195,7 +195,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 const endTime = elements.endTimeInput.value;
 
                 if (endTime <= startTime) {
-                    showFlashMessage('End time must be after start time', 'warning');
+                    showToast('End time must be after start time', 'warning');
                     // Reset end time to one hour after start time
                     const [hours, minutes] = startTime.split(':');
                     let newHour = parseInt(hours) + 1;
@@ -240,7 +240,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const teamId = document.getElementById('selected_team_id').value;
         if (!teamId) {
             e.preventDefault();
-            showFlashMessage('Please select a team before creating an event', 'warning');
+            showToast('Please select a team before creating an event', 'warning');
         }
     });
 
@@ -253,7 +253,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const currentMembers = membersContainer.getElementsByClassName('member-input');
             
             if (currentMembers.length >= MAX_MEMBERS) {
-                showFlashMessage('Maximum 30 team members allowed', 'warning');
+                showToast('Maximum 30 team members allowed', 'warning');
                 return;
             }
 
@@ -290,17 +290,17 @@ document.addEventListener('DOMContentLoaded', function() {
 
             // Validate inputs
             if (!teamName) {
-                showFlashMessage('Please enter a team name', 'warning');
+                showToast('Please enter a team name', 'warning');
                 return;
             }
 
             if (!teamMembers.length) {
-                showFlashMessage('Please add at least one team member', 'warning');
+                showToast('Please add at least one team member', 'warning');
                 return;
             }
 
             if (teamPhrase === 'Click the button to generate your team phrase') {
-                showFlashMessage('Please generate a team phrase', 'warning');
+                showToast('Please generate a team phrase', 'warning');
                 return;
             }
 
@@ -330,19 +330,18 @@ document.addEventListener('DOMContentLoaded', function() {
                     document.getElementById('existing-team-tab').click();
                     document.getElementById('team_search').value = teamName;
                     
-                    showFlashMessage('Team created successfully!', 'success');
+                    showToast('Team created successfully! 🎉', 'success');
                 } else {
                     // Show the error message from the server
-                    showFlashMessage(data.message, 'danger');
+                    showToast(data.message, 'error');
                 }
             } catch (error) {
                 console.error('Error:', error);
-                showFlashMessage('An error occurred while creating the team', 'danger');
+                showToast('An error occurred while creating the team', 'error');
             }
         });
     }
 
-    // Add this after the timezone population code (around line 235)
     const descriptionInput = document.getElementById('description');
     const sdgDetectionStatus = document.getElementById('sdg_detection_status');
     const detectedSdgs = document.getElementById('detected_sdgs');
@@ -517,4 +516,91 @@ async function createTeam(teamData) {
         console.error('Error:', error);
         return false;
     }
+}
+
+// Add this function at the end of the file
+function copyEventDetails(button) {
+    const card = button.closest('.card');
+    const title = card.querySelector('.card-title').textContent;
+    const team = card.querySelector('.card-subtitle').textContent.trim();
+    
+    // Get the date/time text and clean it up
+    const dateTimeElement = card.querySelector('.card-text');
+    const dateTimeText = dateTimeElement.textContent.trim();
+    const timezoneLine = dateTimeText.split('\n').pop().trim();
+    const mainDateTime = dateTimeText.split('\n')
+        .filter(line => line.trim() && !line.includes('Vancouver')) // Remove empty lines and timezone
+        .map(line => line.trim())
+        .join(' ');
+
+    const location = card.querySelector('.card-text:nth-of-type(2)')?.textContent.trim() || '';
+    const description = card.querySelector('.card-text:nth-of-type(3)')?.textContent.trim() || '';
+    
+    // Get SDG goals if they exist
+    const sdgBadges = card.querySelectorAll('.badge');
+    const sdgGoals = Array.from(sdgBadges).map(badge => badge.textContent.trim()).join('\n• ');
+    
+    const eventDetails = `Join us for this exciting event! #WorldHelper
+🎉 Event: ${title}
+👥 Team: ${team}
+📅 ${mainDateTime}
+🌐 ${timezoneLine}
+📍 ${location}
+
+📝 Description:
+${description}
+
+${sdgGoals ? `🎯 SDG Goals:\n• ${sdgGoals}` : ''}
+`;
+
+    navigator.clipboard.writeText(eventDetails).then(() => {
+        // Show feedback on button
+        const originalIcon = button.innerHTML;
+        button.innerHTML = '<i class="fas fa-check"></i>';
+        button.classList.add('btn-success');
+        button.classList.remove('btn-outline-secondary');
+        
+        // Create and show toast
+        showToast('Event details copied to clipboard! 🎉');
+        
+        setTimeout(() => {
+            button.innerHTML = originalIcon;
+            button.classList.remove('btn-success');
+            button.classList.add('btn-outline-secondary');
+        }, 2000);
+    }).catch(err => {
+        console.error('Failed to copy text: ', err);
+        showToast('Failed to copy event details ❌', 'error');
+    });
+}
+
+// Add this new function
+function showToast(message, type = 'success') {
+    // Create toast container if it doesn't exist
+    let container = document.querySelector('.toast-container');
+    if (!container) {
+        container = document.createElement('div');
+        container.className = 'toast-container';
+        document.body.appendChild(container);
+    }
+
+    // Create toast element
+    const toast = document.createElement('div');
+    toast.className = 'custom-toast';
+    toast.innerHTML = `
+        <i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i>
+        <span>${message}</span>
+    `;
+
+    // Add toast to container
+    container.appendChild(toast);
+
+    // Trigger animation
+    setTimeout(() => toast.classList.add('show'), 10);
+
+    // Remove toast after 3 seconds
+    setTimeout(() => {
+        toast.classList.remove('show');
+        setTimeout(() => toast.remove(), 300);
+    }, 3000);
 }
