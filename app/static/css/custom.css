@@ -1436,17 +1436,23 @@ h2.theme-pink {
 
 /* Navbar mobile styles */
 .navbar-toggler {
-    border: 2px solid var(--pink-dark);
+    border: 2px solid var(--pink-primary);
     padding: 0.5rem;
     margin-right: 0.5rem;
+    transition: all 0.3s ease;
 }
 
 .navbar-toggler-icon {
-    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba(74, 14, 28, 1)' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba(255, 20, 147, 1)' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
 }
 
 .navbar-toggler:focus {
-    box-shadow: 0 0 0 0.2rem rgba(74, 14, 28, 0.25);
+    box-shadow: 0 0 0 0.2rem rgba(255, 20, 147, 0.25);
+}
+
+.navbar-toggler:hover {
+    border-color: var(--pink-hover);
+    transform: scale(1.05);
 }
 
 @media (max-width: 991px) {
