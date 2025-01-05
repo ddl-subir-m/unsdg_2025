@@ -19,18 +19,24 @@ def add_notification():
         notification = Notification(message=message)
         db.session.add(notification)
         db.session.commit()
-        # flash('Notification added successfully!', 'success')
-        flash((f'Notification added successfully!', url_for('admin.manage_notifications')), 'success')
-    return redirect(url_for('admin.manage_notifications'))
+        return jsonify({
+            'success': True,
+            'message': 'Notification added successfully!'
+        })
+    return jsonify({
+        'success': False,
+        'message': 'Message is required'
+    }), 400
 
 @bp.route('/notifications/<int:id>/delete', methods=['POST'])
 def delete_notification(id):
     notification = Notification.query.get_or_404(id)
     db.session.delete(notification)
     db.session.commit()
-    # flash('Notification deleted successfully!', 'success')
-    flash((f'Notification deleted successfully!', url_for('admin.manage_notifications')), 'success')
-    return redirect(url_for('admin.manage_notifications'))
+    return jsonify({
+        'success': True,
+        'message': 'Notification deleted successfully!'
+    })
 
 @bp.route('/database')
 def manage_database():

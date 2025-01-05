@@ -164,24 +164,20 @@ def create_event():
             db.session.add(event)
             db.session.commit()
 
-            flash((f'Event "{title}" has been created successfully!', request.path), 'success')
-            today_date = date.today().strftime('%Y-%m-%d')
-            
-            # Pass the selected team information back to the template
-            selected_team = {
-                'id': team.id,
-                'name': team.name
-            }
             update_bingo_card(team.id, sdg_analysis)
             
-            return render_template('create_event.html', 
-                                 today_date=today_date,
-                                 selected_team=selected_team)
+            return jsonify({
+                'success': True,
+                'message': f'Event "{title}" has been created successfully!',
+                'redirect': url_for('main.events')
+            })
 
         except Exception as e:
             db.session.rollback()
-            flash((f'An error occurred: {str(e)}', request.path), 'error')
-            return redirect(url_for('main.create_event'))
+            return jsonify({
+                'success': False,
+                'message': f'An error occurred: {str(e)}'
+            }), 400
 
     # GET request
     today_date = date.today().strftime('%Y-%m-%d')
@@ -228,7 +224,10 @@ def verify_team():
     team = Team.query.get_or_404(team_id)
     verified = team.team_phrase == team_phrase
     
-    return jsonify({'verified': verified})
+    return jsonify({
+        'success': verified,
+        'message': 'Team verified successfully' if verified else 'Invalid team phrase'
+    })
 
 @bp.route('/leaderboard')
 def leaderboard():

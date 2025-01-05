@@ -236,11 +236,36 @@ document.addEventListener('DOMContentLoaded', function() {
     populateTimezoneDropdown();
 
     // Add this event listener
-    document.getElementById('event_form').addEventListener('submit', function(e) {
+    document.getElementById('event_form').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
         const teamId = document.getElementById('selected_team_id').value;
         if (!teamId) {
-            e.preventDefault();
             showToast('Please select a team before creating an event', 'warning');
+            return;
+        }
+
+        try {
+            const formData = new FormData(this);
+            const response = await fetch(this.action, {
+                method: 'POST',
+                body: formData
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                showToast(data.message, 'success');
+                // Redirect after showing toast
+                setTimeout(() => {
+                    window.location.href = data.redirect;
+                }, 2000);
+            } else {
+                showToast(data.message, 'error');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            showToast('An error occurred while creating the event', 'error');
         }
     });
 
@@ -421,33 +446,6 @@ function debounce(func, wait) {
     };
 }
 
-// Add this function at the start of your file
-async function showFlashMessage(message, category) {
-    console.log('Showing flash message:', message, category);
-    
-    let flashContainer = document.querySelector('.flash-messages');
-    
-    // Create container if it doesn't exist
-    if (!flashContainer) {
-        console.log('Creating flash container');
-        flashContainer = document.createElement('div');
-        flashContainer.className = 'flash-messages';
-        document.querySelector('.container').insertBefore(flashContainer, document.querySelector('.container').firstChild);
-    }
-    
-    const alert = document.createElement('div');
-    alert.className = `alert alert-${category} alert-dismissible fade show`;
-    alert.innerHTML = `
-        ${message}
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    `;
-    flashContainer.appendChild(alert);
-
-    // Optional: Auto-dismiss after 5 seconds
-    setTimeout(() => {
-        alert.remove();
-    }, 30000);
-}
 
 // Add this function outside the existing event listeners
 function removeSDGBadge(button, goalToRemove, isPrimary) {
