@@ -117,14 +117,18 @@ function openEditModal(modelName, recordId) {
                 <option value="true" ${value ? 'selected' : ''}>True</option>
                 <option value="false" ${value ? '' : 'selected'}>False</option>
             `;
-        } else if (key.endsWith('_at')) {
+        } else if (key.endsWith('_at') || key.endsWith('_date')) {
             input = document.createElement('input');
             input.type = 'datetime-local';
             if (value) {
-                // Convert the datetime string to the format required by datetime-local
                 const dt = new Date(value);
                 input.value = dt.toISOString().slice(0, 16);
             }
+        } else if (typeof value === 'object' && value !== null) {
+            // Handle JSON objects
+            input = document.createElement('textarea');
+            input.value = JSON.stringify(value, null, 2);
+            input.rows = 5;
         } else {
             input = document.createElement('input');
             input.type = 'text';
