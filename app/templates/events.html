@@ -74,10 +74,19 @@
                     <div class="card-footer bg-transparent border-top">
                         {% if event.verification %}
                             <div class="d-flex flex-column align-items-center">
-                                <img src="{{ url_for('main.get_verification_photo', verification_id=event.verification.id) }}" 
-                                     class="img-thumbnail mb-2" 
-                                     style="max-height: 150px;" 
-                                     alt="Event verification photo">
+                                <div class="position-relative" style="cursor: pointer;" 
+                                     onclick="openVerificationModal('{{ event.id }}', true)">
+                                    <img src="{{ url_for('main.get_verification_photo', verification_id=event.verification.id) }}" 
+                                         class="img-thumbnail mb-2" 
+                                         style="max-height: 150px;" 
+                                         alt="Event verification photo">
+                                    <div class="position-absolute top-0 start-0 w-100 h-100 d-flex flex-column align-items-center justify-content-center hover-overlay" 
+                                         style="background: rgba(0,0,0,0.7); opacity: 0; transition: opacity 0.3s; color: white;">
+                                        <i class="fas fa-camera-rotate fa-2x mb-2"></i>
+                                        <span class="small text-center">Click to update photo</span>
+                                    </div>
+                                </div>
+                                <small class="text-muted mb-2"><i class="fas fa-info-circle"></i> Click image to update photo</small>
                                 <div class="d-flex align-items-center">
                                     <i class="fas {% if event.verification.verified %}fa-check-circle text-success{% else %}fa-clock text-warning{% endif %} me-2"></i>
                                     {% if event.verification.verified %}
@@ -170,10 +179,19 @@
                     <div class="card-footer bg-transparent border-top">
                         {% if event.verification %}
                             <div class="d-flex flex-column align-items-center">
-                                <img src="{{ url_for('main.get_verification_photo', verification_id=event.verification.id) }}" 
-                                     class="img-thumbnail mb-2" 
-                                     style="max-height: 150px;" 
-                                     alt="Event verification photo">
+                                <div class="position-relative" style="cursor: pointer;" 
+                                     onclick="openVerificationModal('{{ event.id }}', true)">
+                                    <img src="{{ url_for('main.get_verification_photo', verification_id=event.verification.id) }}" 
+                                         class="img-thumbnail mb-2" 
+                                         style="max-height: 150px;" 
+                                         alt="Event verification photo">
+                                    <div class="position-absolute top-0 start-0 w-100 h-100 d-flex flex-column align-items-center justify-content-center hover-overlay" 
+                                         style="background: rgba(0,0,0,0.7); opacity: 0; transition: opacity 0.3s; color: white;">
+                                        <i class="fas fa-camera-rotate fa-2x mb-2"></i>
+                                        <span class="small text-center">Click to update photo</span>
+                                    </div>
+                                </div>
+                                <small class="text-muted mb-2"><i class="fas fa-info-circle"></i> Click image to update photo</small>
                                 <div class="d-flex align-items-center">
                                     <i class="fas {% if event.verification.verified %}fa-check-circle text-success{% else %}fa-clock text-warning{% endif %} me-2"></i>
                                     {% if event.verification.verified %}
@@ -350,15 +368,17 @@ function openTeamPhraseEmail(teamName, memberNames) {
     window.location.href = `mailto:sdgworldhelper@gmail.com?subject=${subject}&body=${body}`;
 }
 
-function openVerificationModal(eventId) {
+function openVerificationModal(eventId, isUpdate = false) {
     currentEventId = eventId;
     const modal = new bootstrap.Modal(document.getElementById('verificationModal'));
+    document.getElementById('verificationForm').dataset.isUpdate = isUpdate;
     modal.show();
 }
 
 async function submitVerification() {
     const photoInput = document.getElementById('verificationPhoto');
     const phraseInput = document.getElementById('verificationPhrase');
+    const isUpdate = document.getElementById('verificationForm').dataset.isUpdate === 'true';
     
     if (!photoInput.files[0]) {
         showToast('Please select a photo', 'warning');
@@ -368,6 +388,7 @@ async function submitVerification() {
     const formData = new FormData();
     formData.append('photo', photoInput.files[0]);
     formData.append('team_phrase', phraseInput.value);
+    formData.append('is_update', isUpdate);
     
     try {
         const response = await fetch(`/api/events/${currentEventId}/verify`, {
@@ -378,7 +399,7 @@ async function submitVerification() {
         const data = await response.json();
         
         if (response.ok) {
-            showToast('Verification submitted successfully! 📸', 'success');
+            showToast(`Verification ${isUpdate ? 'updated' : 'submitted'} successfully! 📸`, 'success');
             bootstrap.Modal.getInstance(document.getElementById('verificationModal')).hide();
             setTimeout(() => location.reload(), 1500);
         } else {
@@ -406,4 +427,18 @@ function togglePhraseVisibility() {
 }
 </script>
 <script src="{{ url_for('static', filename='js/event_creation.js') }}"></script>
+{% endblock %}
+
+{% block styles %}
+<style>
+    .hover-overlay {
+        background-color: rgba(0, 0, 0, 0.7) !important;
+        opacity: 0 !important;
+        transition: opacity 0.3s !important;
+    }
+
+    .position-relative:hover .hover-overlay {
+        opacity: 1 !important;
+    }
+</style>
 {% endblock %} 

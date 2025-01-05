@@ -248,13 +248,36 @@ def verify_team():
 
 @bp.route('/leaderboard')
 def leaderboard():
-    teams = db.session.query(Team, func.count(Event.id).label('event_count')) \
-        .outerjoin(Event) \
-        .join(EventVerification, Event.id == EventVerification.event_id) \
-        .filter(EventVerification.verified == True) \
-        .group_by(Team.id) \
-        .order_by(func.count(Event.id).desc()) \
-        .all()
+    current_time = datetime.utcnow()
+    print(f"Current UTC time: {current_time}")
+    
+    # Get all verified events
+    verified_events = Event.query.join(EventVerification)\
+        .filter(EventVerification.verified == True).all()
+    print(f"Found {len(verified_events)} verified events")
+    
+    # Process events and count them per team
+    team_counts = {}
+    for event in verified_events:
+        # Convert event end time to UTC for comparison
+        event_tz = pytz.timezone(event.timezone)
+        event_end_utc = event_tz.localize(event.end_date).astimezone(pytz.UTC)
+        
+        if event_end_utc.replace(tzinfo=None) < current_time:
+            team_counts[event.team_id] = team_counts.get(event.team_id, 0) + 1
+    
+    print(f"Team counts: {team_counts}")
+    
+    # Get teams with their counts
+    teams = []
+    for team_id, count in team_counts.items():
+        team = Team.query.get(team_id)
+        if team:
+            teams.append((team, count))
+    
+    # Sort by count descending
+    teams.sort(key=lambda x: x[1], reverse=True)
+    
     ranked_teams = [(rank, team, event_count) for rank, (team, event_count) in enumerate(teams, start=1)]
     return render_template('leaderboard.html', ranked_teams=ranked_teams)
 
@@ -662,6 +685,7 @@ def submit_verification(event_id):
     try:
         event = Event.query.get_or_404(event_id)
         team_phrase = request.form.get('team_phrase')
+        is_update = request.form.get('is_update') == 'true'
         
         team = Team.query.get(event.team_id)
         if not team or team.team_phrase != team_phrase:
@@ -683,20 +707,29 @@ def submit_verification(event_id):
         
         compressed_photo_data = compress_image(photo_data)
         
-        verification = EventVerification(
-            event_id=event_id,
-            team_id=team.id,
-            photo_data=compressed_photo_data,
-            photo_filename=secure_filename(photo.filename),
-            mime_type=photo.content_type
-        )
+        if is_update and event.verification:
+            # Update existing verification
+            event.verification.photo_data = compressed_photo_data
+            event.verification.photo_filename = secure_filename(photo.filename)
+            event.verification.mime_type = photo.content_type
+            event.verification.verified = False
+            event.verification.verified_at = None
+        else:
+            # Create new verification
+            verification = EventVerification(
+                event_id=event_id,
+                team_id=team.id,
+                photo_data=compressed_photo_data,
+                photo_filename=secure_filename(photo.filename),
+                mime_type=photo.content_type
+            )
+            db.session.add(verification)
         
-        db.session.add(verification)
         db.session.commit()
         
         return jsonify({
-            'message': 'Verification submitted successfully',
-            'verification_id': verification.id
+            'message': f'Verification {"updated" if is_update else "submitted"} successfully',
+            'verification_id': event.verification.id if is_update else verification.id
         }), 201
         
     except Exception as e:
