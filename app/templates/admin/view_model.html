@@ -93,18 +93,12 @@
 var records = {{ records|tojson|safe }};
 
 function openEditModal(modelName, recordId) {
-    const record = window.records.find(r => r.id === recordId);
-    const modal = new bootstrap.Modal(document.getElementById('editModal'));
+    const record = records.find(r => r.id === recordId);
     const form = document.getElementById('editForm');
     const modalBody = form.querySelector('.modal-body');
-    
-    // Set the form action
-    form.action = `/admin/database/${modelName}/update/${recordId}`;
-    
-    // Clear existing form fields
     modalBody.innerHTML = '';
-    
-    // Add form fields for each column
+    form.action = `/admin/database/${modelName}/update/${recordId}`;
+
     for (const [key, value] of Object.entries(record)) {
         if (key === 'id') continue;
         
@@ -116,42 +110,50 @@ function openEditModal(modelName, recordId) {
         label.textContent = key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
         
         let input;
-        
-        if (key.endsWith('_at')) {
-            // DateTime field
-            input = document.createElement('input');
-            input.type = 'datetime-local';
-            if (value) {
-                input.value = new Date(value).toISOString().slice(0, 16);
-            }
-        } else if (typeof value === 'boolean') {
-            // Boolean field
+        if (typeof value === 'boolean') {
             input = document.createElement('select');
+            input.className = 'form-select';
             input.innerHTML = `
                 <option value="true" ${value ? 'selected' : ''}>True</option>
                 <option value="false" ${value ? '' : 'selected'}>False</option>
             `;
-        } else if (typeof value === 'object') {
-            // JSON field
-            input = document.createElement('textarea');
-            input.value = JSON.stringify(value, null, 2);
+        } else if (key.endsWith('_at')) {
+            input = document.createElement('input');
+            input.type = 'datetime-local';
+            if (value) {
+                // Convert the datetime string to the format required by datetime-local
+                const dt = new Date(value);
+                input.value = dt.toISOString().slice(0, 16);
+            }
         } else {
-            // Text field
             input = document.createElement('input');
             input.type = 'text';
             input.value = value || '';
         }
         
-        input.className = 'form-control';
         input.name = key;
-        input.required = !key.endsWith('_at');  // Make all fields required except datetime fields
+        input.className = input.className || 'form-control';
         
         div.appendChild(label);
         div.appendChild(input);
         modalBody.appendChild(div);
     }
     
-    modal.show();
+    new bootstrap.Modal(document.getElementById('editModal')).show();
 }
+
+// Add this to refresh the page after form submission
+document.getElementById('editForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const form = e.target;
+    fetch(form.action, {
+        method: 'POST',
+        body: new FormData(form)
+    }).then(response => {
+        if (response.ok) {
+            location.reload();
+        }
+    });
+});
 </script>
 {% endblock %} 

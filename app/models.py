@@ -118,3 +118,30 @@ class Notification(db.Model):
             'message': self.message,
             'created_at': self.created_at.strftime('%Y-%m-%d %H:%M:%S') if self.created_at else None
         }
+
+class EventVerification(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    event_id = db.Column(db.Integer, db.ForeignKey('event.id', ondelete='CASCADE'), nullable=False)
+    team_id = db.Column(db.Integer, db.ForeignKey('team.id', ondelete='CASCADE'), nullable=False)
+    photo_data = db.Column(db.LargeBinary, nullable=False)
+    photo_filename = db.Column(db.String(256), nullable=False)
+    mime_type = db.Column(db.String(64), nullable=False)
+    verified = db.Column(db.Boolean, default=False)
+    submitted_at = db.Column(db.DateTime, default=datetime.utcnow)
+    verified_at = db.Column(db.DateTime)
+
+    # Add these relationships
+    event = db.relationship('Event', backref=db.backref('verification', uselist=False))
+    team = db.relationship('Team', backref=db.backref('verifications', lazy='dynamic'))
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'event_id': self.event_id,
+            'team_id': self.team_id,
+            'photo_filename': self.photo_filename,
+            'mime_type': self.mime_type,
+            'verified': self.verified,
+            'submitted_at': self.submitted_at.strftime('%Y-%m-%d %H:%M:%S') if self.submitted_at else None,
+            'verified_at': self.verified_at.strftime('%Y-%m-%d %H:%M:%S') if self.verified_at else None
+        }

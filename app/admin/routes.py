@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, redirect, url_for, flash, request, jsonify
-from app.models import BingoCard, Event, Notification, Team, TeamMember, JSONType
+from app.models import BingoCard, Event, Notification, Team, TeamMember, JSONType, EventVerification
 from app import db
 from datetime import datetime
 import json
@@ -46,7 +46,8 @@ def manage_database():
         'Event': Event,
         'TeamMember': TeamMember,
         'BingoCard': BingoCard,
-        'Notification': Notification
+        'Notification': Notification,
+        'EventVerification': EventVerification
     }
     
     # Get counts for each model
@@ -61,7 +62,8 @@ def view_model(model_name):
         'Event': Event,
         'TeamMember': TeamMember,
         'BingoCard': BingoCard,
-        'Notification': Notification
+        'Notification': Notification,
+        'EventVerification': EventVerification
     }
     
     if model_name not in models:
@@ -80,7 +82,8 @@ def delete_record(model_name, id):
         'Event': Event,
         'TeamMember': TeamMember,
         'BingoCard': BingoCard,
-        'Notification': Notification
+        'Notification': Notification,
+        'EventVerification': EventVerification
     }
     
     if model_name not in models:
@@ -107,7 +110,8 @@ def update_record(model_name, id):
         'Event': Event,
         'TeamMember': TeamMember,
         'BingoCard': BingoCard,
-        'Notification': Notification
+        'Notification': Notification,
+        'EventVerification': EventVerification
     }
     
     if model_name not in models:
@@ -118,28 +122,70 @@ def update_record(model_name, id):
     record = model.query.get_or_404(id)
     
     try:
+        print(f"Form data: {request.form}")  # Debug print
+        
         # Get the form data
         for column in record.__table__.columns:
-            if column.name != 'id':  # Skip the ID field
+            if column.name in ['id', 'photo_data']:  # Skip ID and photo_data fields
+                continue
+                
+            # Special handling for boolean fields
+            if isinstance(column.type, db.Boolean):
+                value = request.form.get(column.name, 'false')
+                value = value.lower() == 'true'
+                print(f"Setting boolean {column.name} to {value}")  # Debug print
+            else:
                 value = request.form.get(column.name)
                 
                 # Handle different data types
                 if value is not None:
-                    if isinstance(column.type, db.Boolean):
-                        value = value.lower() == 'true'
-                    elif isinstance(column.type, db.Integer):
+                    if isinstance(column.type, db.Integer):
                         value = int(value) if value.strip() else None
                     elif isinstance(column.type, db.DateTime):
-                        value = datetime.strptime(value, '%Y-%m-%dT%H:%M') if value else None
+                        try:
+                            value = datetime.strptime(value, '%Y-%m-%dT%H:%M') if value else None
+                            print(f"Setting datetime {column.name} to {value}")  # Debug print
+                        except ValueError:
+                            try:
+                                value = datetime.strptime(value, '%Y-%m-%d %H:%M:%S') if value else None
+                                print(f"Setting datetime (alt format) {column.name} to {value}")  # Debug print
+                            except ValueError:
+                                value = None
                     elif isinstance(column.type, JSONType):
                         value = json.loads(value) if value else None
-                
-                setattr(record, column.name, value)
+            
+            setattr(record, column.name, value)
+        
+        # Special handling for EventVerification
+        if model_name == 'EventVerification':
+            if record.verified and not record.verified_at:
+                record.verified_at = datetime.utcnow()
+            elif not record.verified:
+                record.verified_at = None
+            print(f"Final verification state: verified={record.verified}, verified_at={record.verified_at}")  # Debug print
         
         db.session.commit()
         flash((f'{model_name} record updated successfully', request.path), 'success')
     except Exception as e:
         db.session.rollback()
+        print(f"Error updating record: {str(e)}")  # Debug print
         flash((f'Error updating record: {str(e)}', request.path), 'error')
     
-    return redirect(url_for('admin.view_model', model_name=model_name)) 
+    return redirect(url_for('admin.view_model', model_name=model_name))
+
+@bp.route('/verifications')
+def manage_verifications():
+    verifications = EventVerification.query\
+        .filter_by(verified=False)\
+        .order_by(EventVerification.submitted_at.desc())\
+        .all()
+    return render_template('admin/verifications.html', verifications=verifications)
+
+@bp.route('/verifications/<int:verification_id>/approve', methods=['POST'])
+def approve_verification(verification_id):
+    verification = EventVerification.query.get_or_404(verification_id)
+    verification.verified = True
+    verification.verified_at = datetime.utcnow()
+    db.session.commit()
+    flash('Verification approved successfully!', 'success')
+    return redirect(url_for('admin.manage_verifications')) 

@@ -1,14 +1,17 @@
-from flask import render_template, redirect, url_for, flash, request, jsonify
+from flask import render_template, redirect, url_for, flash, request, jsonify, send_file
 from datetime import date, datetime
 from app.main import bp
 from app import db
-from app.models import Team, Event, TeamMember, BingoCard, Notification
+from app.models import Team, Event, TeamMember, BingoCard, Notification, EventVerification
 from sqlalchemy import func
 from openai import OpenAI
 import json
 import os
 import random
 import pytz
+from PIL import Image
+from io import BytesIO
+from werkzeug.utils import secure_filename
 
 
 client = OpenAI(api_key=os.environ.get('OPENAI_API_KEY'))
@@ -76,6 +79,20 @@ def update_bingo_card(team_id, sdg_goals):
     
     bingo_card.marked_numbers = list(marked)
     db.session.commit()
+
+def compress_image(image_data):
+    img = Image.open(BytesIO(image_data))
+    output = BytesIO()
+    
+    if img.mode != 'RGB':
+        img = img.convert('RGB')
+    
+    max_size = (1920, 1080)
+    if img.size[0] > max_size[0] or img.size[1] > max_size[1]:
+        img.thumbnail(max_size, Image.LANCZOS)
+    
+    img.save(output, format='JPEG', quality=85, optimize=True)
+    return output.getvalue()
 
 @bp.route('/')
 def index():
@@ -233,6 +250,8 @@ def verify_team():
 def leaderboard():
     teams = db.session.query(Team, func.count(Event.id).label('event_count')) \
         .outerjoin(Event) \
+        .join(EventVerification, Event.id == EventVerification.event_id) \
+        .filter(EventVerification.verified == True) \
         .group_by(Team.id) \
         .order_by(func.count(Event.id).desc()) \
         .all()
@@ -637,3 +656,59 @@ def delete_team_member(team_id, member_id):
     except Exception as e:
         db.session.rollback()
         return jsonify({'message': str(e)}), 500
+
+@bp.route('/api/events/<int:event_id>/verify', methods=['POST'])
+def submit_verification(event_id):
+    try:
+        event = Event.query.get_or_404(event_id)
+        team_phrase = request.form.get('team_phrase')
+        
+        team = Team.query.get(event.team_id)
+        if not team or team.team_phrase != team_phrase:
+            return jsonify({'message': 'Invalid team phrase'}), 403
+            
+        if 'photo' not in request.files:
+            return jsonify({'message': 'No photo uploaded'}), 400
+            
+        photo = request.files['photo']
+        if photo.filename == '':
+            return jsonify({'message': 'No photo selected'}), 400
+            
+        if not photo.filename.lower().endswith(('.png', '.jpg', '.jpeg')):
+            return jsonify({'message': 'Invalid file type'}), 400
+        
+        photo_data = photo.read()
+        if len(photo_data) > 5 * 1024 * 1024:  # 5MB limit
+            return jsonify({'message': 'Photo size exceeds 5MB limit'}), 400
+        
+        compressed_photo_data = compress_image(photo_data)
+        
+        verification = EventVerification(
+            event_id=event_id,
+            team_id=team.id,
+            photo_data=compressed_photo_data,
+            photo_filename=secure_filename(photo.filename),
+            mime_type=photo.content_type
+        )
+        
+        db.session.add(verification)
+        db.session.commit()
+        
+        return jsonify({
+            'message': 'Verification submitted successfully',
+            'verification_id': verification.id
+        }), 201
+        
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'message': str(e)}), 500
+
+@bp.route('/verification_photo/<int:verification_id>')
+def get_verification_photo(verification_id):
+    verification = EventVerification.query.get_or_404(verification_id)
+    return send_file(
+        BytesIO(verification.photo_data),
+        mimetype=verification.mime_type,
+        as_attachment=False,
+        download_name=verification.photo_filename
+    )
