@@ -97,11 +97,16 @@
                                 </div>
                             </div>
                         {% else %}
-                            <button class="btn btn-outline-pink btn-sm" 
-                                    onclick="openVerificationModal('{{ event.id }}', '{{ event.title }}')"
-                                    {% if event.start_date > now %}disabled{% endif %}>
-                                <i class="fas fa-camera"></i> Submit Verification
-                            </button>
+                            <div class="d-flex flex-column align-items-start">
+                                <button class="btn btn-outline-pink btn-sm mb-2" 
+                                        onclick="openVerificationModal('{{ event.id }}', '{{ event.title }}')"
+                                        {% if event.start_date > now %}disabled{% endif %}>
+                                    <i class="fas fa-camera"></i> Submit Verification
+                                </button>
+                                <small class="text-muted text-center">
+                                    <i class="fas fa-info-circle"></i> Please add a photo to earn leaderboard points!
+                                </small>
+                            </div>
                         {% endif %}
                     </div>
                 </div>
