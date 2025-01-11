@@ -515,71 +515,71 @@ def learn_unsdg():
     sdg_details = {
         1: {
             "title": "No Poverty",
-            "description": "End poverty in all its forms everywhere. This goal aims to ensure that all people, particularly the poor and vulnerable, have equal rights to economic resources, access to basic services, and social protection systems."
+            "description": "Imagine a world where everyone has enough for their piggy banks and no one ever has to worry about money again!"
         },
         2: {
             "title": "Zero Hunger",
-            "description": "End hunger, achieve food security and improved nutrition, and promote sustainable agriculture. This includes ensuring sustainable food production systems and implementing resilient agricultural practices."
+            "description": "A planet where your favourite foods are always on the menu, and no one ever goes to bed with a growling tummy."
         },
         3: {
             "title": "Good Health and Well-being",
-            "description": "Ensure healthy lives and promote well-being for all at all ages. This encompasses reducing maternal mortality, ending preventable deaths of newborns and children, and combating communicable diseases."
+            "description": "A life where doctors are superheroes, and everyone feels like they just stepped out of a spa!"
         },
         4: {
             "title": "Quality Education",
-            "description": "Ensure inclusive and equitable quality education and promote lifelong learning opportunities for all. This includes ensuring that all girls and boys complete free, equitable, and quality primary and secondary education."
+            "description": "A world full of exciting classrooms and cool gadgets where everyone learns awesome things every day."
         },
         5: {
             "title": "Gender Equality",
-            "description": "Achieve gender equality and empower all women and girls. This involves eliminating all forms of discrimination, violence, and harmful practices against women and girls everywhere."
+            "description": "A place where anyone can be a boss, and everyone’s talents shine, no matter who they are!"
         },
         6: {
             "title": "Clean Water and Sanitation",
-            "description": "Ensure availability and sustainable management of water and sanitation for all. This includes achieving universal and equitable access to safe and affordable drinking water."
+            "description": "Crystal-clear water for everyone, like having your own personal waterfall on tap."
         },
         7: {
             "title": "Affordable and Clean Energy",
-            "description": "Ensure access to affordable, reliable, sustainable, and modern energy for all. This involves increasing the share of renewable energy and improving energy efficiency."
+            "description": "Power that’s as green as grass, keeping everything running without a drop of pollution."
         },
         8: {
             "title": "Decent Work and Economic Growth",
-            "description": "Promote sustained, inclusive, and sustainable economic growth, full and productive employment, and decent work for all."
+            "description": "Dream jobs for everyone, where work is as fun as a game and everyone shares in the success."
         },
         9: {
             "title": "Industry, Innovation and Infrastructure",
-            "description": "Build resilient infrastructure, promote inclusive and sustainable industrialization, and foster innovation. This includes developing quality, reliable, sustainable, and resilient infrastructure."
+            "description": "Building the future with flying cars, smart cities, and robots helping us out!"
         },
         10: {
             "title": "Reduced Inequalities",
-            "description": "Reduce inequality within and among countries. This involves promoting social, economic, and political inclusion of all, irrespective of age, sex, disability, race, ethnicity, origin, religion, or economic status."
+            "description": "A world where everyone gets a fair shot at success, whether you're from the big city or a tiny village."
         },
         11: {
             "title": "Sustainable Cities and Communities",
-            "description": "Make cities and human settlements inclusive, safe, resilient, and sustainable. This includes ensuring access to safe and affordable housing and basic services."
+            "description": "Cities so eco-friendly they look like they’re straight out of a nature documentary."
         },
         12: {
             "title": "Responsible Consumption and Production",
-            "description": "Ensure sustainable consumption and production patterns. This involves sustainable management and efficient use of natural resources."
+            "description": "Using just what we need, so there’s always enough for everyone, forever."
         },
         13: {
             "title": "Climate Action",
-            "description": "Take urgent action to combat climate change and its impacts. This includes strengthening resilience and adaptive capacity to climate-related hazards and natural disasters."
+            "description": "Team Earth fighting climate change like superheroes battling the biggest villain."
         },
         14: {
             "title": "Life Below Water",
-            "description": "Conserve and sustainably use the oceans, seas, and marine resources for sustainable development. This involves reducing marine pollution and protecting marine ecosystems."
+            "description": "Oceans so clean that dolphins and sea turtles would throw parties for us."
         },
         15: {
             "title": "Life on Land",
-            "description": "Protect, restore, and promote sustainable use of terrestrial ecosystems, sustainably manage forests, combat desertification, halt and reverse land degradation, and halt biodiversity loss."
+            "description": "Forests full of happy trees and wildlife, where nature and people live in perfect harmony."
         },
         16: {
             "title": "Peace, Justice and Strong Institutions",
-            "description": "Promote peaceful and inclusive societies for sustainable development, provide access to justice for all, and build effective, accountable, and inclusive institutions at all levels."
+            "description": "A world where disputes are solved with teamwork, not fights, and everyone plays fair."
         },
         17: {
             "title": "Partnerships for the Goals",
-            "description": "Strengthen the means of implementation and revitalize the global partnership for sustainable development. This involves enhancing cooperation between governments, the private sector, and civil society."
+            "description": "The ultimate team-up where countries and people join forces like a global superhero squad to save the day!"
         }
     }
     return render_template('learn_unsdg.html', sdg_details=sdg_details)
