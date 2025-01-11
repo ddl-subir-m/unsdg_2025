@@ -1468,3 +1468,20 @@ h2.theme-pink {
     }
 }
 
+.navbar-logo {
+    width: 75px;
+    height: 75px;
+    border-radius: 50%;
+    margin-right: 10px;
+    vertical-align: middle;
+}
+
+/* Adjust for mobile */
+@media (max-width: 768px) {
+    .navbar-logo {
+        width: 45px;
+        height: 45px;
+        margin-right: 8px;
+    }
+}
+
