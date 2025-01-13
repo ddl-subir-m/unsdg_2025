@@ -1,8 +1,9 @@
-from flask import Blueprint, render_template, redirect, url_for, flash, request, jsonify
+from flask import Blueprint, render_template, redirect, url_for, flash, request, jsonify, send_file, current_app
 from app.models import BingoCard, Event, Notification, Team, TeamMember, JSONType, EventVerification
 from app import db
 from datetime import datetime
 import json
+import os
 
 from app.admin import bp
 
@@ -189,3 +190,18 @@ def approve_verification(verification_id):
     db.session.commit()
     flash('Verification approved successfully!', 'success')
     return redirect(url_for('admin.manage_verifications')) 
+
+@bp.route('/database/download')
+def download_database():
+    db_path = os.path.join(current_app.instance_path, 'unsdg_events.db')
+    
+    if not os.path.exists(db_path):
+        flash(('Database file not found', request.path), 'error')
+        return redirect(url_for('admin.manage_database'))
+    
+    return send_file(
+        db_path,
+        as_attachment=True,
+        download_name='unsdg_events.db',
+        mimetype='application/x-sqlite3'
+    ) 

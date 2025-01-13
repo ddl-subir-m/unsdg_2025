@@ -4,7 +4,12 @@
 
 {% block content %}
 <div class="container">
-    <h1 class="mb-4">Database Management</h1>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="mb-4">Database Management</h1>
+        <a href="{{ url_for('admin.download_database') }}" class="btn btn-success">
+            <i class="fas fa-download me-2"></i>Download Database File
+        </a>
+    </div>
 
     <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
         {% for model_name, model in models.items() %}
